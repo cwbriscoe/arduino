@@ -9,7 +9,7 @@ ThreadManager threadManager;
 
 void initialize() {
   // initialize the thread manager and worker threads
-  threadManager.add("blink", 1, 200, task1);
+  threadManager.add("blink", 1, (unsigned long)(200) * 1000, task1);
 }
 
 #endif
