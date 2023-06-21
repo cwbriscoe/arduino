@@ -11,7 +11,16 @@ void task1(unsigned long) {
   } else {
     powerOffLED(LED_BUILTIN);
   }
+
   blinkStatus = !blinkStatus;
+}
+
+auto counter = 0;
+void task2(unsigned long) {
+  Serial.print("task 2 counter: ");
+  Serial.println(counter);
+  Serial.flush();
+  counter++;
 }
 
 #endif

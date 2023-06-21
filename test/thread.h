@@ -74,11 +74,11 @@ public:
         auto currTime = time();
         if (currTime < prevTime) {
           for (auto j = 0; j < numThreads; j++) {
-            thread[i]->overflowed = false;
+            thread[j]->overflowed = false;
             // this should be edge case but if any threads hasn't rolled over before currTime,
             // we need to reset their nextTime to zero or they won't run again for a long time
-            if (thread[i]->nextTime > MAX_TIME / 2) {
-              thread[i]->nextTime = 0;
+            if (thread[j]->nextTime > MAX_TIME / 2) {  // (MAX_TIME / 2) implies (in non-debug mode) that all threads have to
+              thread[j]->nextTime = 0;                 // to have a duration less than ~30 minutes or bad things may happen
             }
           }
         }
@@ -86,7 +86,7 @@ public:
 
         // check if thread[i] is ready to run or not
         if (!thread[i]->overflowed && thread[i]->nextTime <= currTime) {
-          // execute the thread and reschedule the next time it should run
+          // execute the thread
           thread[i]->thread(currTime);
 
           // calculate next schedule time, taking in account of possible overflow
