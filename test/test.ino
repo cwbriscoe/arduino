@@ -1,4 +1,3 @@
-#include "env.h"
 #include "init.h"
 
 void setup() {
@@ -7,11 +6,6 @@ void setup() {
 
   // setup pin configs
   setupLED(LED_BUILTIN);
-
-  // if debuggin open serial communication over USB
-#ifdef DEBUG
-  Serial.begin(9600);
-#endif
 }
 
 void loop() {

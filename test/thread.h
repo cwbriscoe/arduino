@@ -2,13 +2,14 @@
 #define THREAD_H
 
 #include "env.h"
-#include "wait.h"
+#include "time.h"
 
 struct threadEntry {
-  byte priority;                                 // priority of the thread (1-255, lower number is highest priority)
-  unsigned long interval;                        // interval betweeen executions
-  unsigned long nextTime;                        // next time thread is scheduled to run
+  byte priority;                  // priority of the thread (1-255, lower number is highest priority)
+  unsigned long interval;         // interval betweeen executions
+  unsigned long nextTime;         // next time thread is scheduled to run
   void (*thread)(unsigned long);  // function pointer to thread task
+  bool overflowed;                // keep track when the next scheduled iteration time of the task overflowed
 #ifdef DEBUG
   const char* name;  // in debug mode store name of thread
 #endif
@@ -18,6 +19,7 @@ class ThreadManager {
 private:
   byte numThreads = 0;               // number of threads currently added to the manager
   threadEntry* thread[MAX_THREADS];  // array of thread config
+  unsigned long prevTime = 0;        // the previous time we polled from micros()
 
   void insert(threadEntry* te) {  // insert thread at end of array then quick bubble sort
     thread[numThreads] = te;
@@ -45,11 +47,11 @@ public:
     te->priority = priority;
     te->interval = interval;
     te->thread = thread;
-    if (immediate) {
-      te->nextTime = micros();
-    } else {
-      te->nextTime = micros() + interval;
+    te->nextTime = time();
+    if (!immediate) {
+      te->nextTime += interval;
     }
+    te->overflowed = false;
 #ifdef DEBUG
     te->name = name;
 #else
@@ -62,23 +64,50 @@ public:
   void run() {
     auto execCount = 1;
     unsigned long minNextRun;
+
     // keep executin the while loop until no threads are ready to run yet
     while (execCount > 0) {
       execCount = 0;
-      minNextRun = MAX_ULONG;
+      minNextRun = MAX_TIME;
       for (auto i = 0; i < numThreads; i++) {
-        // check if thread[i] is ready to run or not
-        auto currTime = micros();
+        // reset thread overflow flags if the standard timer has finally overflowed
+        auto currTime = time();
+        if (currTime < prevTime) {
+          for (auto j = 0; j < numThreads; j++) {
+            thread[i]->overflowed = false;
+            // this should be edge case but if any threads hasn't rolled over before currTime,
+            // we need to reset their nextTime to zero or they won't run again for a long time
+            if (thread[i]->nextTime > MAX_TIME / 2) {
+              thread[i]->nextTime = 0;
+            }
+          }
+        }
+        prevTime = currTime;
 
-        if (thread[i]->nextTime <= currTime) {
+        // check if thread[i] is ready to run or not
+        if (!thread[i]->overflowed && thread[i]->nextTime <= currTime) {
           // execute the thread and reschedule the next time it should run
           thread[i]->thread(currTime);
-          thread[i]->nextTime += thread[i]->interval;
+
+          // calculate next schedule time, taking in account of possible overflow
+          auto diff = MAX_TIME - thread[i]->nextTime;
+          if (diff < thread[i]->interval) {
+            thread[i]->nextTime = thread[i]->interval - diff;
+            thread[i]->overflowed = true;
+          } else {
+            thread[i]->nextTime += thread[i]->interval;
+          }
+
           execCount++;
         } else {
           // in the case where no threads are executed in the while loop, record the minimum next time a thread
           // needs to run to have a good value to delay until.
-          auto nextRun = thread[i]->nextTime - currTime;
+          unsigned long nextRun;
+          if (thread[i]->overflowed) {
+            nextRun = MAX_TIME - currTime + thread[i]->nextTime;
+          } else {
+            nextRun = thread[i]->nextTime - currTime;
+          }
           if (nextRun < minNextRun) {
             minNextRun = nextRun;
           }

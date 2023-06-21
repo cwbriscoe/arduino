@@ -1,5 +1,16 @@
-#ifndef WAIT_H
-#define WAIT_H
+#ifndef TIME_H
+#define TIME_H
+
+#include "debug.h"
+
+// utility time function to return miniMicros instead of micros when debugging is on
+unsigned long time() {
+#ifdef DEBUG
+  return miniMicros();
+#else
+  return micros();
+#endif
+}
 
 // according to the official docs at https://www.arduino.cc/reference/en/language/functions/time/delaymicroseconds/
 // the minimum accurate delay for delayMicroseconds() is 16383.  This function will delay anything over 1 millisecond
