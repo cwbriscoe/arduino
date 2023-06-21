@@ -5,7 +5,7 @@
 #include "led.h"
 
 auto blinkStatus = false;
-void task1(unsigned long, unsigned long) {
+void task1(unsigned long) {
   if (blinkStatus) {
     powerOnLED(LED_BUILTIN);
   } else {

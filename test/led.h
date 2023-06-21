@@ -1,15 +1,15 @@
 #ifndef LED_H
 #define LED_H
 
-void setupLED(byte pin) {
+void setupLED(const byte pin) {
   pinMode(pin, OUTPUT);
 }
 
-void powerOnLED(byte pin) {
+void powerOnLED(const byte pin) {
   digitalWrite(pin, HIGH);
 }
 
-void powerOffLED(byte pin) {
+void powerOffLED(const byte pin) {
   digitalWrite(pin, LOW);
 }
 
