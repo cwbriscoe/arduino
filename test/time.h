@@ -3,8 +3,78 @@
 
 #include "debug.h"
 
-// utility time function to return miniMicros instead of micros when debugging is on
-unsigned long time() {
+class Time {
+private:
+  unsigned long time = 0;
+  unsigned long generation = 0;
+
+public:
+  Time() {
+    this->update();
+  }
+
+  unsigned long micros() {
+    return time;
+  }
+  unsigned long gen() {
+    return generation;
+  }
+
+  void add(const unsigned long duration) {
+    assert(duration < MAX_TIME);
+    this->update();
+    if (MAX_TIME - this->time < duration) {
+      this->time = duration - (MAX_TIME - this->time);
+      this->generation++;
+      return;
+    }
+    this->time += duration;
+  }
+
+  void update() {
+#ifdef DEBUG
+    auto currTime = miniMicros();
+#else
+    auto currTime = micros();
+#endif
+    if (currTime < time) {
+      generation++;
+    }
+    time = currTime;
+  }
+
+  friend bool operator<(const Time& lhs, const Time& rhs) {
+    if (lhs.generation < rhs.generation) { return true; }
+    if (lhs.generation > rhs.generation) { return false; }
+    return (lhs.time < rhs.time);
+  }
+  friend bool operator>(const Time& lhs, const Time& rhs) {
+    return rhs < lhs;
+  }
+  friend bool operator<=(const Time& lhs, const Time& rhs) {
+    return !(lhs > rhs);
+  }
+  friend bool operator>=(const Time& lhs, const Time& rhs) {
+    return !(lhs < rhs);
+  }
+
+  Time& operator=(const Time& rhs) {
+    if (this == &rhs) { return *this; }
+    time = rhs.time;
+    generation = rhs.generation;
+    return *this;
+  }
+};
+
+// now() updates our global time object (to keep track of generation), updates
+// to the current time and returns a copy
+Time _time;
+const Time& now() {
+  _time.update();
+  return _time;
+}
+
+unsigned long getTime() {
 #ifdef DEBUG
   return miniMicros();
 #else

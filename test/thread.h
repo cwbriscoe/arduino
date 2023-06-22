@@ -47,7 +47,7 @@ public:
     te->priority = priority;
     te->interval = interval;
     te->thread = thread;
-    te->nextTime = time();
+    te->nextTime = getTime();
     if (!immediate) {
       te->nextTime += interval;
     }
@@ -71,7 +71,7 @@ public:
       minNextRun = MAX_TIME;
       for (auto i = 0; i < numThreads; i++) {
         // reset thread overflow flags if the standard timer has finally overflowed
-        auto currTime = time();
+        auto currTime = getTime();
         if (currTime < prevTime) {
           //Serial.println("currTime overflowed");
           for (auto j = 0; j < numThreads; j++) {

@@ -10,6 +10,6 @@ void setup() {
 
 void loop() {
   //threadManager.run();
-  task3(time());
-  wait(500000);
+  task3(getTime());
+  //wait(500000);
 }

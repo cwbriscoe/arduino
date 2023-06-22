@@ -25,6 +25,35 @@ void task2(unsigned long) {
   counter++;
 }
 
+bool firstTime = true;
+Time trigger;
+void task3(unsigned long) {
+  if (firstTime) {
+    trigger.add(1000000);
+    firstTime = false;
+    return;
+  }
+
+  auto time = now();
+
+  /*Serial.print("now: ");
+  Serial.print(now.micros());
+  Serial.print("(");
+  Serial.print(now.gen());
+  Serial.print(") trig: ");
+  Serial.print(trigger.micros());
+  Serial.print("(");
+  Serial.print(trigger.gen());
+  Serial.println(")");*/
+
+  if (trigger <= time) {
+    Serial.print("task 3 time: ");
+    Serial.println(time.micros());
+    trigger.add(1000000);
+  }
+}
+
+/*
 unsigned long nextTime;
 unsigned long prevTime;
 bool firstTime = true;
@@ -86,5 +115,5 @@ void task3(unsigned long time) {
     return;
   }
 }
-
+*/
 #endif
