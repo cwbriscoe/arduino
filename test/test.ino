@@ -9,5 +9,7 @@ void setup() {
 }
 
 void loop() {
-  threadManager.run();
+  //threadManager.run();
+  task3(time());
+  wait(500000);
 }
