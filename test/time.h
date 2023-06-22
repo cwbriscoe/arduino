@@ -13,10 +13,10 @@ public:
     this->update();
   }
 
-  unsigned long micros() {
+  unsigned long micros() const {
     return time;
   }
-  unsigned long gen() {
+  unsigned long gen() const {
     return generation;
   }
 
@@ -59,9 +59,8 @@ public:
   }
 
   Time& operator=(const Time& rhs) {
-    if (this == &rhs) { return *this; }
-    time = rhs.time;
-    generation = rhs.generation;
+    this->time = rhs.time;
+    this->generation = rhs.generation;
     return *this;
   }
 };

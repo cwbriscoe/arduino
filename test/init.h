@@ -10,7 +10,9 @@ void initialize() {
   // if debugging open serial communication over USB
 #ifdef DEBUG
   Serial.begin(9600);
+  // delay a bit in debug mode so serial output isn't garbled on first Serial.print()
   while (!Serial) {}
+  delay(100);
 #endif
 
   // initialize the thread manager and worker threads
