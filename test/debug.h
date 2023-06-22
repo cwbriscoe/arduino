@@ -7,7 +7,7 @@
 
 #ifdef DEBUG
 
-#define MAX_TIME 0x0fffffff
+#define MAX_TIME 0x00ffffff
 
 // miniMicros() overflows every ~70 / 16 minutes to find overflow bugs faster
 unsigned long miniMicros() {

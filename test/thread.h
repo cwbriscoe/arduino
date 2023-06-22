@@ -73,6 +73,7 @@ public:
         // reset thread overflow flags if the standard timer has finally overflowed
         auto currTime = time();
         if (currTime < prevTime) {
+          //Serial.println("currTime overflowed");
           for (auto j = 0; j < numThreads; j++) {
             thread[j]->overflowed = false;
             // this should be edge case but if any threads hasn't rolled over before currTime,
@@ -94,6 +95,9 @@ public:
           if (diff < thread[i]->interval) {
             thread[i]->nextTime = thread[i]->interval - diff;
             thread[i]->overflowed = true;
+            //Serial.print("thread ");
+            //Serial.print(i);
+            //Serial.println(" overflowed");
           } else {
             thread[i]->nextTime += thread[i]->interval;
           }
