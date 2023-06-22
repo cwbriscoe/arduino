@@ -17,7 +17,6 @@ void task1(unsigned long) {
 }
 
 auto counter = 0;
-
 void task2(unsigned long) {
   //Serial.print("task 2 counter: ");
   //Serial.println(counter);
@@ -25,17 +24,8 @@ void task2(unsigned long) {
   counter++;
 }
 
-bool firstTime = true;
-Time trigger;
-void task3(unsigned long) {
-  if (firstTime) {
-    trigger.add(1000000);
-    firstTime = false;
-    return;
-  }
-
-  auto time = now();
-
+Trigger trigger(1000000);
+void task3(const Time& time) {
   /*Serial.print("now: ");
   Serial.print(now.micros());
   Serial.print("(");
@@ -46,10 +36,10 @@ void task3(unsigned long) {
   Serial.print(trigger.gen());
   Serial.println(")");*/
 
-  if (trigger <= time) {
+  if (trigger.triggered(time)) {
     Serial.print("task 3 time: ");
     Serial.println(time.micros());
-    trigger.add(1000000);
+    //trigger.add(1000000);
   }
 }
 

@@ -66,6 +66,24 @@ public:
   }
 };
 
+class Trigger : public Time {
+  private:
+    unsigned long interval;
+
+  public:
+    Trigger(const unsigned long interval, const bool immediate = false ) : Time() {
+      assert(interval < MAX_TIME);
+      this->interval = interval;
+      if (!immediate) { this->add(this->interval); }
+    }
+
+    bool triggered(const Time& time) {
+      auto ret = (*this <= time);
+      if (ret) { this->add(this->interval); }
+      return ret;
+    }
+};
+
 // now() updates our global time object (to keep track of generation), updates
 // to the current time and returns a copy
 Time _time;
