@@ -5,8 +5,7 @@
 #include "led.h"
 
 auto blinkStatus = false;
-
-void task1(unsigned long) {
+void taskBlink(const Time&) {
   if (blinkStatus) {
     powerOnLED(LED_BUILTIN);
   } else {
@@ -16,19 +15,11 @@ void task1(unsigned long) {
   blinkStatus = !blinkStatus;
 }
 
-auto counter = 0;
-void task2(unsigned long) {
-  //Serial.print("task 2 counter: ");
-  //Serial.println(counter);
-  //Serial.flush();
-  counter++;
-}
-
-Trigger trigger(1000000, true);
-void task3(const Time& time) {
+Trigger trigger((unsigned long)1000 * 1000, true);
+void taskCount(const Time& time) {
   if (trigger.triggered(time)) {
-    Serial.print("task 3 time: ");
-    Serial.println(time.micros());
+    Serial.print("taskCount time: ");
+    Serial.println(time.microseconds());
   }
 }
 

@@ -5,19 +5,19 @@
 
 class Time {
 private:
-  unsigned long time = 0;
-  unsigned long generation = 0;
+  unsigned long time = 0;  // time in microseconds
+  unsigned long gens = 0;  // how many times time has overflowed
 
 public:
   Time() {
     this->update();
   }
 
-  unsigned long micros() const {
+  unsigned long microseconds() const {
     return time;
   }
-  unsigned long gen() const {
-    return generation;
+  unsigned long generations() const {
+    return gens;
   }
 
   void add(const unsigned long duration) {
@@ -25,7 +25,7 @@ public:
     this->update();
     if (MAX_TIME - this->time < duration) {
       this->time = duration - (MAX_TIME - this->time);
-      this->generation++;
+      this->gens++;
       return;
     }
     this->time += duration;
@@ -38,14 +38,14 @@ public:
     auto currTime = micros();
 #endif
     if (currTime < time) {
-      generation++;
+      gens++;
     }
     time = currTime;
   }
 
   friend bool operator<(const Time& lhs, const Time& rhs) {
-    if (lhs.generation < rhs.generation) { return true; }
-    if (lhs.generation > rhs.generation) { return false; }
+    if (lhs.gens < rhs.gens) { return true; }
+    if (lhs.gens > rhs.gens) { return false; }
     return (lhs.time < rhs.time);
   }
   friend bool operator>(const Time& lhs, const Time& rhs) {
@@ -60,27 +60,37 @@ public:
 
   Time& operator=(const Time& rhs) {
     this->time = rhs.time;
-    this->generation = rhs.generation;
+    this->gens = rhs.gens;
     return *this;
   }
 };
 
 class Trigger : public Time {
-  private:
-    unsigned long interval;
+private:
+  unsigned long interval;  // interval between trigger events
 
-  public:
-    Trigger(const unsigned long interval, const bool immediate = false ) : Time() {
-      assert(interval < MAX_TIME);
-      this->interval = interval;
-      if (!immediate) { this->add(this->interval); }
-    }
+public:
+  Trigger(const unsigned long interval, const bool immediate = false)
+    : Time() {
+    assert(interval < MAX_TIME);
+    this->interval = interval;
+    if (!immediate) { this->add(this->interval); }
+  }
 
-    bool triggered(const Time& time) {
-      auto ret = (*this <= time);
-      if (ret) { this->add(this->interval); }
-      return ret;
+  bool triggered(const Time& time) {
+    auto ret = (*this <= time);
+    if (ret) { this->add(this->interval); }
+    return ret;
+  }
+
+  unsigned long next(const Time& time) {
+    assert(this->generations() >= time.generations());
+    assert(*this >= time);
+    if (this->generations() > time.generations()) {
+      return (MAX_TIME - time.microseconds()) + this->microseconds();
     }
+    return this->microseconds() - time.microseconds();
+  }
 };
 
 // now() updates our global time object (to keep track of generation), updates
@@ -89,14 +99,6 @@ Time _time;
 const Time& now() {
   _time.update();
   return _time;
-}
-
-unsigned long getTime() {
-#ifdef DEBUG
-  return miniMicros();
-#else
-  return micros();
-#endif
 }
 
 // according to the official docs at https://www.arduino.cc/reference/en/language/functions/time/delaymicroseconds/
