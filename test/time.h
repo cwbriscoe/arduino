@@ -6,7 +6,7 @@
 class Time {
 private:
   unsigned long time = 0;  // time in microseconds
-  unsigned long gens = 0;  // how many times time has overflowed
+  unsigned int gens = 0;   // how many times time has overflowed
 
 public:
   Time() {

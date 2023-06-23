@@ -6,6 +6,7 @@
 
 ThreadManager threadManager;
 
+// init our code before we go into the endless loop
 void initialize() {
   // if debugging open serial communication over USB
 #ifdef DEBUG

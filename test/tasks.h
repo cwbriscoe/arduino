@@ -7,9 +7,9 @@
 auto blinkStatus = false;
 void taskBlink(const Time&) {
   if (blinkStatus) {
-    powerOnLED(LED_BUILTIN);
+    turnOnLED(LED_BUILTIN);
   } else {
-    powerOffLED(LED_BUILTIN);
+    turnOffLED(LED_BUILTIN);
   }
 
   blinkStatus = !blinkStatus;

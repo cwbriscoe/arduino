@@ -52,11 +52,11 @@ public:
   }
 
   void run() {
-    auto execCount = 1;
+    byte execCount;
     unsigned long minNextRun;
 
     // keep executin the while loop until no threads are ready to run yet
-    while (execCount > 0) {
+    do {
       execCount = 0;
       minNextRun = MAX_TIME;
       for (auto i = 0; i < numThreads; i++) {
@@ -66,7 +66,7 @@ public:
           // execute the thread
           thread[i]->thread(currTime);
           execCount++;
-        } else if (execCount == 0) {
+        } else if (!execCount) {
           // in the case where no threads are executed in the while loop, record the minimum next time a thread
           // needs to run to have a good value to delay until.
           auto nextRun = thread[i]->trig->next(currTime);
@@ -75,7 +75,7 @@ public:
           }
         }
       }
-    }
+    } while (execCount);
     wait(minNextRun);
   }
 };

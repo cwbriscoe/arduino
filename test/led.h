@@ -5,11 +5,11 @@ void setupLED(const byte pin) {
   pinMode(pin, OUTPUT);
 }
 
-void powerOnLED(const byte pin) {
+void turnOnLED(const byte pin) {
   digitalWrite(pin, HIGH);
 }
 
-void powerOffLED(const byte pin) {
+void turnOffLED(const byte pin) {
   digitalWrite(pin, LOW);
 }
 
