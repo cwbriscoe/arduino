@@ -20,6 +20,9 @@ void initialize() {
 #ifdef DEBUG
   threadManager.add("counter", 3, (unsigned long)1, taskCount);
 #endif
+
+  // setup pin configs
+  setupLED(LED_BUILTIN);
 }
 
 #endif
