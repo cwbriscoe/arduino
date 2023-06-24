@@ -13,14 +13,29 @@
 #define MX_SHUTDOWN 12
 #define MX_DISPLAYTEST 15
 
+// other constants
+#define MX_ROW_SIZE 8
+#define MX_COL_SIZE 8
+
 class MX7219 {
 private:
-  byte dataPin;    // output where data is sent
-  byte clkPin;     // output for the clock signal
-  byte csPin;      // output for selecting which device to write to
-  byte devices;    // number of devices
-  byte intensity;  // brightness of the display
-  MD_MAX72XX* mx;  // wrapping MD_MAX72XX library for now
+  struct DeviceInfo {
+    byte row[MX_ROW_SIZE];  // data for each row 0=OFF 1=ON
+    byte changed;           // each bit is 1 if the row has changed
+  };
+
+  byte dataPin;        // output where data is sent
+  byte clkPin;         // output for the clock signal
+  byte csPin;          // output for selecting which device to write to
+  byte devices;        // number of devices
+  byte intensity;      // brightness of the display
+  DeviceInfo* matrix;  // stores the LED matrix buffers
+  byte* spiData;       // data buffer for writing to the SPI interface
+  MD_MAX72XX* mx;      // wrapping MD_MAX72XX library for now
+
+  inline byte spiDataSize() const {
+    return sizeof(byte) * this->devices * 2;
+  }
 
 public:
   MX7219(const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1) {
@@ -30,11 +45,15 @@ public:
     this->devices = devices;
     this->intensity = 0;
 
+    // allocate memory needed for buffers
+    this->matrix = new DeviceInfo[this->devices];
+    this->spiData = new byte[this->spiDataSize()];
+
     // set all pins to output
-    pinMode(dataPin, OUTPUT);
-    pinMode(clkPin, OUTPUT);
-    pinMode(csPin, OUTPUT);
-    digitalWrite(csPin, HIGH);
+    pinMode(this->dataPin, OUTPUT);
+    pinMode(this->clkPin, OUTPUT);
+    pinMode(this->csPin, OUTPUT);
+    digitalWrite(this->csPin, HIGH);
 
     // initialize driver and turn auto updates off
     mx = new MD_MAX72XX(MD_MAX72XX::FC16_HW, this->dataPin, this->clkPin, this->csPin, this->devices);
