@@ -13,7 +13,7 @@
 #define MX_SHUTDOWN 12
 #define MX_DISPLAYTEST 15
 
-class mx7219 {
+class MX7219 {
 private:
   byte dataPin;    // output where data is sent
   byte clkPin;     // output for the clock signal
@@ -23,7 +23,7 @@ private:
   MD_MAX72XX* mx;  // wrapping MD_MAX72XX library for now
 
 public:
-  mx7219(const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1) {
+  MX7219(const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1) {
     this->dataPin = dataPin;
     this->clkPin = clkPin;
     this->csPin = csPin;

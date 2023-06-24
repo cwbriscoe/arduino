@@ -4,12 +4,12 @@
 #define THREAD_H
 
 #include "env.h"
-#include "time.h"
+#include "task.h"
 
 struct threadEntry {
-  Trigger* trig;                // keep track of when a thread should execute
-  void (*thread)(const Time&);  // function pointer to thread task
-  byte priority;                // priority of the thread (1-255, lower number is highest priority)
+  Trigger* trig;  // keep track of when a thread should execute
+  Task* task;     // pointer to the task
+  byte priority;  // priority of the thread (1-255, lower number is highest priority)
 #ifdef DEBUG
   const char* name;  // in debug mode store name of thread
 #endif
@@ -37,13 +37,13 @@ private:
   }
 
 public:
-  void add(const char* name, const byte priority, const unsigned long interval, void (*thread)(const Time&), const bool immediate = false) {
+  void add(const char* name, const byte priority, const unsigned long interval, Task* task, const bool immediate = false) {
     assert(numThreads < MAX_THREADS);
 
     auto te = new threadEntry;
     te->priority = priority;
     te->trig = new Trigger(interval, immediate);
-    te->thread = thread;
+    te->task = task;
 #ifdef DEBUG
     te->name = name;
 #else
@@ -51,6 +51,9 @@ public:
 #endif
 
     insert(te);
+
+    // run the init() function of the task
+    task->setup();
   }
 
   void run() {
@@ -66,7 +69,7 @@ public:
         // check if thread[i] is ready to run or not
         if (thread[i]->trig->triggered(currTime)) {
           // execute the thread
-          thread[i]->thread(currTime);
+          thread[i]->task->exec(currTime);
           execCount++;
         } else if (!execCount) {
           // in the case where no threads are executed in the while loop, record the minimum next time a thread

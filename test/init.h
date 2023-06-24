@@ -19,16 +19,16 @@ void initialize() {
 #endif
 
   // initialize the thread manager and worker threads
-  threadManager.add("max7219", 8, (unsigned long)10 * 1000, taskMax7219);
-  threadManager.add("blink", 8, (unsigned long)500 * 1000, taskBlink);
+  threadManager.add("max7219", 8, (unsigned long)10 * 1000, new TaskMax7219());
+  threadManager.add("blink", 8, (unsigned long)500 * 1000, new TaskBlink());
 #ifdef DEBUG
-  threadManager.add("counter", 9, (unsigned long)50, taskCount);
+  threadManager.add("counter", 9, (unsigned long)50, new TaskCount());
 #endif
 
   // setup pin configs
   setupLED(LED_BUILTIN);
 
-  taskMax7219Setup();
+  //taskMax7219Setup();
 }
 
 #endif
