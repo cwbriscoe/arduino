@@ -1,3 +1,5 @@
+// Copyright 2023 Christopher Briscoe.  All rights reserved.
+
 #ifndef DEBUG_H
 #define DEBUG_H
 

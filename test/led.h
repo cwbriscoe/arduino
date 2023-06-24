@@ -1,3 +1,5 @@
+// Copyright 2023 Christopher Briscoe.  All rights reserved.
+
 #ifndef LED_H
 #define LED_H
 

@@ -1,3 +1,5 @@
+// Copyright 2023 Christopher Briscoe.  All rights reserved.
+
 #ifndef TIME_H
 #define TIME_H
 
@@ -68,19 +70,37 @@ public:
 class Trigger : public Time {
 private:
   unsigned long interval;  // interval between trigger events
+  bool automatic;          // whether interval is re-added after a trigger event or manually reset()
+  bool executed;           // keeps track of the triggered/reset cycle when automatic is false
 
 public:
-  Trigger(const unsigned long interval, const bool immediate = false)
+  Trigger(const unsigned long interval, const bool immediate = false, const bool automatic = true)
     : Time() {
     assert(interval < MAX_TIME);
     this->interval = interval;
-    if (!immediate) { this->add(this->interval); }
+    this->automatic = automatic;
+    this->executed = false;
+    if (!immediate) {
+      this->add(this->interval);
+    }
   }
 
   bool triggered(const Time& time) {
+    assert(this->automatic || (!this->automatic && !this->executed));
     auto ret = (*this <= time);
-    if (ret) { this->add(this->interval); }
+    if (ret) {
+      if (this->automatic) { this->add(this->interval); }
+      this->executed = true;
+    }
     return ret;
+  }
+
+  void reset(const unsigned long interval) {
+    assert(this->automatic == false);
+    assert(this->executed == true);
+    this->interval = interval;
+    this->add(this->interval);
+    this->executed = false;
   }
 
   unsigned long next(const Time& time) {

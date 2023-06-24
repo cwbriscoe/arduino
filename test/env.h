@@ -1,3 +1,5 @@
+// Copyright 2023 Christopher Briscoe.  All rights reserved.
+
 #ifndef ENV_H
 #define ENV_H
 

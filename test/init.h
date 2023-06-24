@@ -1,3 +1,5 @@
+// Copyright 2023 Christopher Briscoe.  All rights reserved.
+
 #ifndef INIT_H
 #define INIT_H
 
@@ -10,20 +12,23 @@ ThreadManager threadManager;
 void initialize() {
   // if debugging open serial communication over USB
 #ifdef DEBUG
-  Serial.begin(9600);
+  Serial.begin(57600);
   // delay a bit in debug mode so serial output isn't garbled on first Serial.print()
   while (!Serial) {}
   delay(100);
 #endif
 
   // initialize the thread manager and worker threads
-  threadManager.add("blink", 1, (unsigned long)500 * 1000, taskBlink);
+  threadManager.add("max7219", 8, (unsigned long)10 * 1000, taskMax7219);
+  threadManager.add("blink", 8, (unsigned long)500 * 1000, taskBlink);
 #ifdef DEBUG
-  threadManager.add("counter", 3, (unsigned long)1, taskCount);
+  threadManager.add("counter", 9, (unsigned long)50, taskCount);
 #endif
 
   // setup pin configs
   setupLED(LED_BUILTIN);
+
+  taskMax7219Setup();
 }
 
 #endif
