@@ -1,11 +1,13 @@
 // Copyright 2023 Christopher Briscoe.  All rights reserved.
 
-#include "init.h"
+#include "manager.h"
+
+Manager manager;
 
 void setup() {
-  initialize();
+  manager.init();
 }
 
 void loop() {
-  threadManager.run();
+  manager.run();
 }

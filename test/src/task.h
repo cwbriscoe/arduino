@@ -14,10 +14,6 @@ class Task {
  public:
   Task() {}
 
-  void setup() {
-    this->init();
-  }
-
   void exec(const Time& time) {
 #ifdef DEBUG
     auto start = micros();

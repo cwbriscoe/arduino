@@ -55,9 +55,6 @@ class ThreadManager {
 #endif
 
     this->insert(te);
-
-    // run the init() function of the task
-    te->task->setup();
   }
 
   void run() {
