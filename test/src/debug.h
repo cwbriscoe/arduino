@@ -7,7 +7,7 @@
 
 #include "env.h"
 
-// cause time to overflow faster in debug mode to catch errors more quickly 
+// cause time to overflow faster in debug mode to catch errors more quickly
 // this will cause it to overflow about every 16 seconds
 #ifdef DEBUG
 #define MAX_TIME 0x00ffffff
@@ -41,7 +41,6 @@ void __assert(const char *__func, const char *__file, int __lineno, const char *
   println(F("ASSERTION FAILED!"));
   println(__func);
   println(__file);
-  //println(__lineno, DEC);
   println(__lineno);
   println(__sexp);
   Serial.flush();

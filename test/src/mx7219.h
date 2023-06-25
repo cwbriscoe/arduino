@@ -18,7 +18,7 @@
 #define MX_COL_SIZE 8
 
 class MX7219 {
-private:
+ private:
   struct DeviceInfo {
     byte row[MX_ROW_SIZE];  // data for each row 0=OFF 1=ON
     byte changed;           // each bit is 1 if the row has changed
@@ -37,7 +37,7 @@ private:
     return sizeof(byte) * this->devices * 2;
   }
 
-public:
+ public:
   MX7219(const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1) {
     this->dataPin = dataPin;
     this->clkPin = clkPin;

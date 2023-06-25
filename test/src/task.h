@@ -6,12 +6,12 @@
 #include "time.h"
 
 class Task {
-private:
+ private:
 #ifdef DEBUG
   unsigned long runTime = 0;  // accumulative run time of the task
 #endif
 
-public:
+ public:
   Task() {}
 
   void setup() {

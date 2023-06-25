@@ -11,10 +11,10 @@
 /* Blink Task                                                                */
 /*****************************************************************************/
 class TaskBlink : public Task {
-private:
+ private:
   bool led = false;
 
-public:
+ public:
   void init() final {
     setupLED(LED_BUILTIN);
   }
@@ -34,12 +34,12 @@ public:
 /* Count Task                                                                */
 /*****************************************************************************/
 class TaskCount : public Task {
-private:
+ private:
   Trigger trigger;
 
-public:
+ public:
   TaskCount()
-    : trigger((unsigned long)1000 * 1000, true) {}
+      : trigger((unsigned long)1000 * 1000, true) {}
 
   void init() final {}
 
@@ -60,14 +60,14 @@ public:
 #define CLK_PIN 4
 
 class TaskMax7219 : public Task {
-private:
+ private:
   Trigger trigger;
   MX7219 mx;
   byte mxi;
 
-public:
+ public:
   TaskMax7219()
-    : trigger(0, true, false), mx(DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES), mxi(0) {}
+      : trigger(0, true, false), mx(DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES), mxi(0) {}
 
   void init() final {
     mx.begin();

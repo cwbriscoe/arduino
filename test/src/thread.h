@@ -16,7 +16,7 @@ struct threadEntry {
 };
 
 class ThreadManager {
-private:
+ private:
   byte numThreads = 0;               // number of threads currently added to the manager
   threadEntry* thread[MAX_THREADS];  // array of thread config
 #ifdef DEBUG
@@ -40,7 +40,7 @@ private:
     this->numThreads++;
   }
 
-public:
+ public:
   void add(const char* name, const byte priority, const unsigned long interval, Task* task, const bool immediate = false) {
     assert(this->numThreads < MAX_THREADS);
 

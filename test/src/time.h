@@ -6,14 +6,14 @@
 #include "debug.h"
 
 class Time {
-private:
+ private:
   unsigned long time = 0;  // time in microseconds
   unsigned int gens = 0;   // how many times time has overflowed
 
-public:
+ public:
   Time() {
     this->update();
-  this->update();
+    this->update();
   }
 
   unsigned long microseconds() const {
@@ -69,14 +69,14 @@ public:
 };
 
 class Trigger : public Time {
-private:
+ private:
   unsigned long interval;  // interval between trigger events
   bool automatic;          // whether interval is re-added after a trigger event or manually reset()
   bool executed;           // keeps track of the triggered/reset cycle when automatic is false
 
-public:
+ public:
   Trigger(const unsigned long interval, const bool immediate = false, const bool automatic = true)
-    : Time() {
+      : Time() {
     assert(interval < MAX_TIME);
     this->interval = interval;
     this->automatic = automatic;

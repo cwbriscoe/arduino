@@ -3,8 +3,8 @@
 #ifndef INIT_H
 #define INIT_H
 
-#include "thread.h"
 #include "tasks.h"
+#include "thread.h"
 
 ThreadManager threadManager;
 
