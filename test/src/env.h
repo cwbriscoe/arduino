@@ -9,7 +9,4 @@
 
 const byte MAX_THREADS = 4;
 
-// numeric limit constants
-const unsigned long MAX_ULONG = 0xffffffff;
-
 #endif

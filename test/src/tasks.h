@@ -3,9 +3,9 @@
 #ifndef TASKS_H
 #define TASKS_H
 
-#include "components/components.h"
-#include "debug.h"
-#include "task.h"
+#include "comp/comp.h"
+#include "lib/debug.h"
+#include "lib/task.h"
 
 /*****************************************************************************/
 /* Blink Task                                                                */

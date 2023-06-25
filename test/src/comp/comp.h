@@ -3,10 +3,8 @@
 #ifndef COMPONENTS_H
 #define COMPONENTS_H
 
-#include <Arduino.h>
-
-#include "components/led.h"
-#include "components/mx7219.h"
+#include "comp/led.h"
+#include "comp/mx7219.h"
 #include "env.h"
 
 #endif

@@ -3,8 +3,8 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
+#include "lib/thread.h"
 #include "tasks.h"
-#include "thread.h"
 
 class Manager {
  private:
