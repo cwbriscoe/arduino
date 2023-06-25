@@ -15,7 +15,9 @@ private:
   bool led = false;
 
 public:
-  void init() final {}
+  void init() final {
+    setupLED(LED_BUILTIN);
+  }
 
   void run(const Time&) final {
     if (led) {

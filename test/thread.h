@@ -19,26 +19,30 @@ class ThreadManager {
 private:
   byte numThreads = 0;               // number of threads currently added to the manager
   threadEntry* thread[MAX_THREADS];  // array of thread config
-  unsigned long prevTime = 0;        // the previous time we polled from micros()
+#ifdef DEBUG
+  unsigned long runTime = 0;   // accumulative run time of the scheduler
+  unsigned long waitTime = 0;  // accumulative wait (idle) time
+  unsigned long prevTime = 0;  // to keep track of time overflow
+#endif
 
   void insert(threadEntry* te) {  // insert thread at end of array then quick bubble sort
-    thread[numThreads] = te;
+    this->thread[this->numThreads] = te;
 
-    for (auto i = numThreads; i > 0; i--) {
-      if (thread[i]->priority < thread[i - 1]->priority) {
-        auto temp = thread[i - 1];
-        thread[i - 1] = thread[i];
-        thread[i] = temp;
+    for (auto i = this->numThreads; i > 0; i--) {
+      if (this->thread[i]->priority < this->thread[i - 1]->priority) {
+        auto temp = this->thread[i - 1];
+        this->thread[i - 1] = this->thread[i];
+        this->thread[i] = temp;
       } else {
         break;
       }
     }
-    numThreads++;
+    this->numThreads++;
   }
 
 public:
   void add(const char* name, const byte priority, const unsigned long interval, Task* task, const bool immediate = false) {
-    assert(numThreads < MAX_THREADS);
+    assert(this->numThreads < MAX_THREADS);
 
     auto te = new threadEntry;
     te->priority = priority;
@@ -50,13 +54,26 @@ public:
     (void)name;  // prevent compiler warning on unused parameter in the non-debug path
 #endif
 
-    insert(te);
+    this->insert(te);
 
     // run the init() function of the task
-    task->setup();
+    te->task->setup();
   }
 
   void run() {
+#ifdef DEBUG
+    auto start = micros();
+    if (start < prevTime) {
+      for (auto i = 0; i < this->numThreads; i++) {
+        this->thread[i]->task->resetStats();
+      }
+      this->runTime = 0;
+      this->waitTime = 0;
+    }
+    if ((start & MAX_TIME) < (prevTime & MAX_TIME)) { this->printStats(); }
+    prevTime = start;
+#endif
+
     byte execCount;
     unsigned long minNextRun;
 
@@ -67,22 +84,54 @@ public:
       for (auto i = 0; i < numThreads; i++) {
         auto currTime = now();
         // check if thread[i] is ready to run or not
-        if (thread[i]->trig->triggered(currTime)) {
+        if (this->thread[i]->trig->triggered(currTime)) {
           // execute the thread
-          thread[i]->task->exec(currTime);
+          this->thread[i]->task->exec(currTime);
           execCount++;
         } else if (!execCount) {
           // in the case where no threads are executed in the while loop, record the minimum next time a thread
           // needs to run to have a good value to delay until.
-          auto nextRun = thread[i]->trig->next(currTime);
+          auto nextRun = this->thread[i]->trig->next(currTime);
           if (nextRun < minNextRun) {
             minNextRun = nextRun;
           }
         }
       }
     } while (execCount);
+
+#ifdef DEBUG
+    this->runTime += micros() - start;
+    this->waitTime += minNextRun;
+#endif
+
     wait(minNextRun);
   }
+
+#ifdef DEBUG
+  void printStats() {
+    auto print = [](const char* name, const float pct) {
+      Serial.print(name);
+      Serial.print(" ");
+      Serial.println(pct);
+    };
+
+    auto totalTime = this->runTime + this->waitTime;
+    unsigned long totalTaskTime = 0;
+
+    for (auto i = 0; i < this->numThreads; i++) {
+      auto time = this->thread[i]->task->getRunTime();
+      auto pct = float(time) / float(totalTime) * 100.0f;
+      print(this->thread[i]->name, pct);
+      totalTaskTime += time;
+    }
+
+    auto pct = float(this->runTime - totalTaskTime) / float(totalTime) * 100.0f;
+    print("manager", pct);
+
+    pct = float(this->waitTime) / float(totalTime) * 100.0f;
+    print("idle", pct);
+  }
+#endif
 };
 
 #endif
