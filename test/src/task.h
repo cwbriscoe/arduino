@@ -26,8 +26,6 @@ class Task {
 #endif
   }
 
-  virtual void init() {}
-
   virtual void run(const Time&) {}
 
 #ifdef DEBUG

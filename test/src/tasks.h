@@ -3,31 +3,24 @@
 #ifndef TASKS_H
 #define TASKS_H
 
+#include "components/components.h"
 #include "debug.h"
-#include "led.h"
 #include "task.h"
-#include "mx7219.h"
 
 /*****************************************************************************/
 /* Blink Task                                                                */
 /*****************************************************************************/
 class TaskBlink : public Task {
  private:
-  bool led = false;
+  Led led;
 
  public:
-  void init() final {
-    setupLED(LED_BUILTIN);
-  }
+  TaskBlink() : led(LED_BUILTIN) {}
+
+  void init() {}
 
   void run(const Time&) final {
-    if (led) {
-      turnOnLED(LED_BUILTIN);
-    } else {
-      turnOffLED(LED_BUILTIN);
-    }
-
-    led = !led;
+    led.toggle();
   }
 };
 
@@ -42,7 +35,7 @@ class TaskCount : public Task {
   TaskCount()
       : trigger((unsigned long)1000 * 1000, true) {}
 
-  void init() final {}
+  void init() {}
 
   void run(const Time& time) final {
     if (trigger.triggered(time)) {
@@ -70,7 +63,7 @@ class TaskMax7219 : public Task {
   TaskMax7219()
       : trigger(0, true, false), mx(DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES), mxi(0) {}
 
-  void init() final {
+  void init() {
     mx.begin();
     // Set the intensity (brightness) of the display (0-15):
     mx.setIntensity(0);
