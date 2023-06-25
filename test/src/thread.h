@@ -109,10 +109,10 @@ public:
 
 #ifdef DEBUG
   void printStats() {
-    auto print = [](const char* name, const float pct) {
-      Serial.print(name);
-      Serial.print(" ");
-      Serial.println(pct);
+    auto display = [](const char* name, const float pct) {
+      print(name);
+      print(" ");
+      println(pct);
     };
 
     auto totalTime = this->runTime + this->waitTime;
@@ -121,15 +121,15 @@ public:
     for (auto i = 0; i < this->numThreads; i++) {
       auto time = this->thread[i]->task->getRunTime();
       auto pct = float(time) / float(totalTime) * 100.0f;
-      print(this->thread[i]->name, pct);
+      display(this->thread[i]->name, pct);
       totalTaskTime += time;
     }
 
     auto pct = float(this->runTime - totalTaskTime) / float(totalTime) * 100.0f;
-    print("manager", pct);
+    display("manager", pct);
 
     pct = float(this->waitTime) / float(totalTime) * 100.0f;
-    print("idle", pct);
+    display("idle", pct);
   }
 #endif
 };

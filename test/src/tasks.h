@@ -45,8 +45,8 @@ public:
 
   void run(const Time& time) final {
     if (trigger.triggered(time)) {
-      Serial.print("taskCount time: ");
-      Serial.println(time.microseconds());
+      print(F("taskCount time: "));
+      println(time.microseconds());
     }
   }
 };

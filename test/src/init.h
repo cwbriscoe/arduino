@@ -12,7 +12,7 @@ ThreadManager threadManager;
 void initialize() {
   // if debugging open serial communication over USB
 #ifdef DEBUG
-  Serial.begin(57600);
+  Serial.begin(115200);
   // delay a bit in debug mode so serial output isn't garbled on first Serial.print()
   while (!Serial) {}
   delay(100);
@@ -24,6 +24,8 @@ void initialize() {
 #ifdef DEBUG
   threadManager.add("counter", 9, (unsigned long)50 * 1000, new TaskCount());
 #endif
+
+  println(F("setup complete"));
 }
 
 #endif

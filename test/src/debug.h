@@ -22,18 +22,28 @@ unsigned long miniMicros() {
 }
 #endif
 
+// setup debug prints to be NOOP's without debug mode set
+#ifdef DEBUG
+#define print(x) Serial.print(x)
+#define println(x) Serial.println(x)
+#else
+#define print(x)
+#define println(x)
+#endif
+
 // handle diagnostic informations given by assertion and abort program execution
 #ifdef DEBUG
 #define __ASSERT_USE_STDERR
 #include <assert.h>
 void __assert(const char *__func, const char *__file, int __lineno, const char *__sexp) {
   // transmit diagnostic informations through serial link
-  Serial.println();
-  Serial.println("ASSERTION FAILED!");
-  Serial.println(__func);
-  Serial.println(__file);
-  Serial.println(__lineno, DEC);
-  Serial.println(__sexp);
+  println();
+  println(F("ASSERTION FAILED!"));
+  println(__func);
+  println(__file);
+  //println(__lineno, DEC);
+  println(__lineno);
+  println(__sexp);
   Serial.flush();
   // abort program execution
   abort();
