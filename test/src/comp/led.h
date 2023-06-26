@@ -9,7 +9,7 @@ class Led {
   bool value = false;
 
  public:
-  Led(const byte pin) {
+  explicit Led(const byte pin) {
     this->pin = pin;
     pinMode(this->pin, OUTPUT);
   }

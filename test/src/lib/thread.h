@@ -41,6 +41,11 @@ class ThreadManager {
   }
 
  public:
+  ThreadManager() {
+    for (auto i = 0; i < MAX_THREADS; i++)
+      this->thread[i] = nullptr;
+  }
+
   void add(const char* name, const byte priority, const unsigned long interval, Task* task, const bool immediate = false) {
     assert(this->numThreads < MAX_THREADS);
 

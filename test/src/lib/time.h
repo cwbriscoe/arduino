@@ -75,7 +75,7 @@ class Trigger : public Time {
   bool executed;           // keeps track of the triggered/reset cycle when automatic is false
 
  public:
-  Trigger(const unsigned long interval, const bool immediate = false, const bool automatic = true)
+  explicit Trigger(const unsigned long interval, const bool immediate = false, const bool automatic = true)
       : Time() {
     assert(interval < MAX_TIME);
     this->interval = interval;
@@ -87,7 +87,7 @@ class Trigger : public Time {
   }
 
   bool triggered(const Time& time) {
-    assert(this->automatic || (!this->automatic && !this->executed));
+    assert(this->automatic || !this->executed);
     auto ret = (*this <= time);
     if (ret) {
       if (this->automatic) { this->add(this->interval); }
