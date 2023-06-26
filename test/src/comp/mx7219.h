@@ -5,6 +5,8 @@
 
 #include <MD_MAX72xx.h>
 
+#include "env.h"
+
 // control registers (1-8 = digits 0-7)
 #define MX_NOOP 0
 #define MX_DECODEMODE 9
@@ -24,6 +26,7 @@ class MX7219 {
     byte changed;           // each bit is 1 if the row has changed
   };
 
+  byte pwrPin;         // pin used to supply power
   byte dataPin;        // output where data is sent
   byte clkPin;         // output for the clock signal
   byte csPin;          // output for selecting which device to write to
@@ -38,7 +41,8 @@ class MX7219 {
   }
 
  public:
-  MX7219(const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1) {
+  MX7219(const byte pwrPin, const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1) {
+    this->pwrPin = pwrPin;
     this->dataPin = dataPin;
     this->clkPin = clkPin;
     this->csPin = csPin;
@@ -50,10 +54,12 @@ class MX7219 {
     this->spiData = new byte[this->spiDataSize()];
 
     // set all pins to output
+    pinMode(this->pwrPin, OUTPUT);
     pinMode(this->dataPin, OUTPUT);
     pinMode(this->clkPin, OUTPUT);
     pinMode(this->csPin, OUTPUT);
     digitalWrite(this->csPin, HIGH);
+    digitalWrite(this->pwrPin, HIGH);
 
     // initialize driver and turn auto updates off
     mx = new MD_MAX72XX(MD_MAX72XX::FC16_HW, this->dataPin, this->clkPin, this->csPin, this->devices);

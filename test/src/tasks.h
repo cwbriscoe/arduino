@@ -25,6 +25,36 @@ class TaskBlink : public Task {
 };
 
 /*****************************************************************************/
+/* Buttons Task                                                              */
+/*****************************************************************************/
+class TaskButtons : public Task {
+ private:
+  const byte pwrBtnPin = 8;
+  const byte mode1BtnPin = 9;
+  const byte mode2BtnPin = 10;
+  Button pwrBtn;
+  Button mode1Btn;
+  Button mode2Btn;
+
+ public:
+  TaskButtons() : pwrBtn(pwrBtnPin), mode1Btn(mode1BtnPin), mode2Btn(mode2BtnPin) {}
+
+  void init() {}
+
+  void run(const Time&) final {
+    if (pwrBtn.isOn()) {
+      println("power is on...");
+    }
+    if (mode1Btn.isOn()) {
+      println("mode1 is on...");
+    }
+    if (mode2Btn.isOn()) {
+      println("mode2 is on...");
+    }
+  }
+};
+
+/*****************************************************************************/
 /* Count Task                                                                */
 /*****************************************************************************/
 class TaskCount : public Task {
@@ -49,9 +79,10 @@ class TaskCount : public Task {
 /* Max7219 Task                                                              */
 /*****************************************************************************/
 #define MAX_DEVICES 4
+#define PWR_PIN 12
 #define CS_PIN 3
-#define DATA_PIN 2
-#define CLK_PIN 4
+#define DATA_PIN 4
+#define CLK_PIN 2
 
 class TaskMax7219 : public Task {
  private:
@@ -61,7 +92,7 @@ class TaskMax7219 : public Task {
 
  public:
   TaskMax7219()
-      : trigger(0, true, false), mx(DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES), mxi(0) {}
+      : trigger(0, true, false), mx(PWR_PIN, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES), mxi(0) {}
 
   void init() {
     mx.begin();

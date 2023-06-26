@@ -12,6 +12,7 @@ class Manager {
   // task declarations
   TaskMax7219 taskMax7219;
   TaskBlink taskBlink;
+  TaskButtons taskButtons;
   TaskCount taskCount;
 
  public:
@@ -27,7 +28,10 @@ class Manager {
 #endif
 
     // initialize the thread manager and worker threads
-    threads.add("max7219", 8, (unsigned long)10 * 1000, &taskMax7219);
+    threads.add("buttons", 7, (unsigned long)25 * 1000, &taskButtons);
+    taskButtons.init();
+
+    threads.add("max7219", 8, (unsigned long)50 * 1000, &taskMax7219);
     taskMax7219.init();
 
     threads.add("blink", 8, (unsigned long)500 * 1000, &taskBlink);
