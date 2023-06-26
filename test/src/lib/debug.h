@@ -22,6 +22,17 @@ unsigned long miniMicros() {
 }
 #endif
 
+// function to enable serial port when debugging only
+#ifdef DEBUG
+void enableDebuggingSerialPort() {
+  Serial.begin(115200);
+  while (!Serial) {}  // delay a bit in debug mode so serial output isn't garbled on first Serial.print()
+  delay(100);
+}
+#else
+void enableDebuggingSerialPort() {}
+#endif
+
 // setup debug prints to be NOOP's without debug mode set
 #ifdef DEBUG
 #define print(x) Serial.print(x)
@@ -43,6 +54,7 @@ inline void __assert(const char *__func, const char *__file, int __lineno, const
   println(__file);
   println(__lineno);
   println(__sexp);
+  Serial.flush();
   // abort program execution
   abort();
 }

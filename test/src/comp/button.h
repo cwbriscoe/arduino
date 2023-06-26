@@ -8,6 +8,8 @@
 class Button : public Control {
  private:
   byte pin = 0;
+  bool prevState = false;
+  bool currState = false;
 
  public:
   explicit Button(const byte pin) {
@@ -15,16 +17,33 @@ class Button : public Control {
     pinMode(this->pin, INPUT);
   }
 
+  inline void update() {
+    currState = digitalRead(pin) == HIGH;
+    if (currState != prevState) {
+      prevState = currState;
+      notifyListeners(currState);
+    }
+  }
+
   inline bool value() {
-    return digitalRead(pin);
+    return currState;
   }
 
   inline bool isOn() {
-    return this->value() == HIGH;
+    return currState == HIGH;
   }
 
   inline bool isOff() {
-    return this->value() == LOW;
+    return currState == LOW;
+  }
+};
+
+class ButtonTask : public Button, public Task {
+ public:
+  ButtonTask(const byte pin) : Button(pin) {}
+
+  void run() {
+    update();
   }
 };
 

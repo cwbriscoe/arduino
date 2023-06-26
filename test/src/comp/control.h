@@ -8,20 +8,25 @@
 class Control {
  private:
   bool enabled = true;
+  Control* listener = nullptr;
 
  public:
   Control() {}
 
-  void setEnabled(const bool enabled) {
-    if (this->enabled != enabled) {
-      this->enabled = enabled;
-      this->onEnabledChanged();
-    }
-  }
+  inline void setEnabled(const bool enabled) { this->enabled = enabled; }
+
+  inline void toggleEnabled() { enabled = !enabled; }
 
   inline bool isEnabled() { return enabled; }
 
-  virtual void onEnabledChanged() {}
+  inline void addListener(Control* listener) { this->listener = listener; }
+
+  void notifyListeners(unsigned long value) {
+    if (!listener) return;
+    listener->onControllerChanged(value);
+  }
+
+  virtual void onControllerChanged(const unsigned long value) {}
 };
 
 #endif

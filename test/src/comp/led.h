@@ -35,4 +35,9 @@ class Led : public Control {
   }
 };
 
+class LedTask : public Led, public Task {
+ public:
+  LedTask(const byte pin) : Led(pin) {}
+};
+
 #endif

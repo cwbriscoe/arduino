@@ -10,47 +10,50 @@
 /*****************************************************************************/
 /* Blink Task                                                                */
 /*****************************************************************************/
-class TaskBlink : public Task {
- private:
-  Led led;
-
+class LedBlinkTask : public LedTask {
  public:
-  TaskBlink() : led(LED_BUILTIN) {}
-
-  void init() {}
+  LedBlinkTask() : LedTask(LED_BUILTIN) {}
 
   void run(const Time&) final {
-    led.toggle();
+    toggle();
   }
 };
 
 /*****************************************************************************/
-/* Buttons Task                                                              */
+/* Power Button Task                                                         */
 /*****************************************************************************/
-class TaskButtons : public Task {
- private:
-  const byte pwrBtnPin = 8;
-  const byte mode1BtnPin = 9;
-  const byte mode2BtnPin = 10;
-  Button pwrBtn;
-  Button mode1Btn;
-  Button mode2Btn;
-
+class PwrBtnTask : public ButtonTask {
  public:
-  TaskButtons() : pwrBtn(pwrBtnPin), mode1Btn(mode1BtnPin), mode2Btn(mode2BtnPin) {}
-
-  void init() {}
+  PwrBtnTask(const byte pin) : ButtonTask(pin) {}
 
   void run(const Time&) final {
-    if (pwrBtn.isOn()) {
-      println("power is on...");
-    }
-    if (mode1Btn.isOn()) {
-      println("mode1 is on...");
-    }
-    if (mode2Btn.isOn()) {
-      println("mode2 is on...");
-    }
+    ButtonTask::run();
+  }
+};
+
+/*****************************************************************************/
+/* Mode1 Button Task                                                         */
+/*****************************************************************************/
+class Mode1BtnTask : public ButtonTask {
+ public:
+  Mode1BtnTask(const byte pin) : ButtonTask(pin) {}
+
+  void run(const Time&) final {
+    ButtonTask::run();
+    if (isOn()) println(F("mode1 button on..."));
+  }
+};
+
+/*****************************************************************************/
+/* Mode2 Button Task                                                         */
+/*****************************************************************************/
+class Mode2BtnTask : public ButtonTask {
+ public:
+  Mode2BtnTask(const byte pin) : ButtonTask(pin) {}
+
+  void run(const Time&) final {
+    ButtonTask::run();
+    if (isOn()) println(F("mode2 button on..."));
   }
 };
 
@@ -64,8 +67,6 @@ class TaskCount : public Task {
  public:
   TaskCount()
       : trigger((unsigned long)1000 * 1000, true) {}
-
-  void init() {}
 
   void run(const Time& time) final {
     if (trigger.triggered(time)) {
@@ -84,44 +85,53 @@ class TaskCount : public Task {
 #define DATA_PIN 4
 #define CLK_PIN 2
 
-class TaskMax7219 : public Task {
+class DisplayTask : public MX7219Task {
  private:
   Trigger trigger;
-  MX7219 mx;
   byte mxi;
 
  public:
-  TaskMax7219()
-      : trigger(0, true, false), mx(PWR_PIN, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES), mxi(0) {}
-
-  void init() {
-    mx.begin();
+  DisplayTask() : MX7219Task(PWR_PIN, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES), trigger(0, true, false), mxi(0) {
+    begin();
     // Set the intensity (brightness) of the display (0-15):
-    mx.setIntensity(0);
+    setIntensity(0);
     // Clear the display:
-    mx.clear();
+    clear();
+  }
+
+  void onControllerChanged(const unsigned long value) final {
+    if (!value) return;
+    toggleEnabled();
+    if (!isEnabled()) {
+      clear();
+      update();
+    }
   }
 
   void run(const Time& time) final {
-    if (!trigger.triggered(time)) { return; }
-    if (!mx.isEnabled()) { return; }
+    if (!trigger.triggered(time)) return;
+    if (!this->isEnabled()) {
+      goto RESET;
+    }
 
-    mx.clear(0);
-    mx.setChar(COL_SIZE - 1, mxi);
+    clear(0);
+    setChar(COL_SIZE - 1, mxi);
 
     if (MAX_DEVICES >= 3) {
       char hex[3];
 
       sprintf(hex, "%02X", mxi);
 
-      mx.clear(1);
-      mx.setChar((2 * COL_SIZE) - 1, hex[1]);
-      mx.clear(2);
-      mx.setChar((3 * COL_SIZE) - 1, hex[0]);
+      clear(1);
+      setChar((2 * COL_SIZE) - 1, hex[1]);
+      clear(2);
+      setChar((3 * COL_SIZE) - 1, hex[0]);
     }
 
-    mx.update();
+    update();
     mxi++;
+
+  RESET:
     trigger.reset((unsigned long)250 * 1000);
   }
 };

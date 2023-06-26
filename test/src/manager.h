@@ -7,39 +7,39 @@
 #include "tasks.h"
 
 class Manager {
+  const byte pwrBtnPin = 8;
+  const byte mode1BtnPin = 9;
+  const byte mode2BtnPin = 10;
+
  private:
   ThreadManager threads;  // pointer to our thread manager
+
   // task declarations
-  TaskMax7219 taskMax7219;
-  TaskBlink taskBlink;
-  TaskButtons taskButtons;
+  PwrBtnTask pwrBtnTask;
+  Mode1BtnTask mode1BtnTask;
+  Mode2BtnTask mode2BtnTask;
+  DisplayTask displayTask;
+  LedBlinkTask ledBlinkTask;
   TaskCount taskCount;
 
  public:
-  Manager() {}
+  Manager() : pwrBtnTask(pwrBtnPin), mode1BtnTask(mode1BtnPin), mode2BtnTask(mode2BtnPin) {}
 
   void init() {
     // if debugging open serial communication over USB
-#ifdef DEBUG
-    Serial.begin(115200);
-    // delay a bit in debug mode so serial output isn't garbled on first Serial.print()
-    while (!Serial) {}
-    delay(100);
-#endif
+    enableDebuggingSerialPort();
 
-    // initialize the thread manager and worker threads
-    threads.add("buttons", 7, (unsigned long)25 * 1000, &taskButtons);
-    taskButtons.init();
+    // hook up listeners
+    pwrBtnTask.addListener(&displayTask);
 
-    threads.add("max7219", 8, (unsigned long)50 * 1000, &taskMax7219);
-    taskMax7219.init();
-
-    threads.add("blink", 8, (unsigned long)500 * 1000, &taskBlink);
-    taskBlink.init();
-
+    // add tasks to the thread manager
+    threads.add("pwrbtn", 7, (unsigned long)25 * 1000, &pwrBtnTask);
+    threads.add("md1btn", 7, (unsigned long)25 * 1000, &mode1BtnTask);
+    threads.add("md2btn", 7, (unsigned long)25 * 1000, &mode2BtnTask);
+    threads.add("max7219", 8, (unsigned long)50 * 1000, &displayTask);
+    threads.add("blink", 8, (unsigned long)500 * 1000, &ledBlinkTask);
 #ifdef DEBUG
     threads.add("counter", 9, (unsigned long)50 * 1000, &taskCount);
-    taskCount.init();
 #endif
 
     println(F("setup complete"));
