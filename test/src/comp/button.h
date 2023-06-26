@@ -3,9 +3,9 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include "env.h"
+#include "control.h"
 
-class Button {
+class Button : public Control {
  private:
   byte pin = 0;
 
@@ -15,15 +15,15 @@ class Button {
     pinMode(this->pin, INPUT);
   }
 
-  bool value() {
+  inline bool value() {
     return digitalRead(pin);
   }
 
-  bool isOn() {
+  inline bool isOn() {
     return this->value() == HIGH;
   }
 
-  bool isOff() {
+  inline bool isOff() {
     return this->value() == LOW;
   }
 };

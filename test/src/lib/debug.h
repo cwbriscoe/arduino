@@ -35,7 +35,7 @@ unsigned long miniMicros() {
 #ifdef DEBUG
 #define __ASSERT_USE_STDERR
 #include <assert.h>
-void __assert(const char *__func, const char *__file, int __lineno, const char *__sexp) {
+inline void __assert(const char *__func, const char *__file, int __lineno, const char *__sexp) {
   // transmit diagnostic informations through serial link
   println();
   println(F("ASSERTION FAILED!"));
@@ -43,7 +43,6 @@ void __assert(const char *__func, const char *__file, int __lineno, const char *
   println(__file);
   println(__lineno);
   println(__sexp);
-  Serial.flush();
   // abort program execution
   abort();
 }

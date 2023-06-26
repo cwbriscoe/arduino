@@ -5,7 +5,7 @@
 
 #include <MD_MAX72xx.h>
 
-#include "env.h"
+#include "control.h"
 
 // control registers (1-8 = digits 0-7)
 #define MX_NOOP 0
@@ -19,7 +19,7 @@
 #define MX_ROW_SIZE 8
 #define MX_COL_SIZE 8
 
-class MX7219 {
+class MX7219 : public Control {
  private:
   struct DeviceInfo {
     byte row[MX_ROW_SIZE];  // data for each row 0=OFF 1=ON
@@ -89,6 +89,13 @@ class MX7219 {
 
   void setChar(const unsigned int column, const unsigned int chr) {
     mx->setChar(column, chr);
+  }
+
+  // base class overrides
+  void onEnabledChaned() {
+    if (!this->isEnabled()) {
+      this->clear();
+    }
   }
 };
 

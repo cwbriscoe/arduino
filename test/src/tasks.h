@@ -104,6 +104,7 @@ class TaskMax7219 : public Task {
 
   void run(const Time& time) final {
     if (!trigger.triggered(time)) { return; }
+    if (!mx.isEnabled()) { return; }
 
     mx.clear(0);
     mx.setChar(COL_SIZE - 1, mxi);

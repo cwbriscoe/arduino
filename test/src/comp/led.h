@@ -3,9 +3,9 @@
 #ifndef LED_H
 #define LED_H
 
-#include "env.h"
+#include "control.h"
 
-class Led {
+class Led : public Control {
  private:
   byte pin = 0;
   bool value = false;
@@ -16,11 +16,11 @@ class Led {
     pinMode(this->pin, OUTPUT);
   }
 
-  void setOn() {
+  inline void setOn() {
     digitalWrite(pin, HIGH);
   }
 
-  void setOff() {
+  inline void setOff() {
     digitalWrite(pin, LOW);
   }
 
