@@ -90,13 +90,6 @@ class MX7219 : public Control {
   void setChar(const unsigned int column, const unsigned int chr) {
     mx->setChar(column, chr);
   }
-
-  // base class overrides
-  void onEnabledChaned() {
-    if (!this->isEnabled()) {
-      this->clear();
-    }
-  }
 };
 
 class MX7219Task : public MX7219, public Task {
