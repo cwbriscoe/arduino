@@ -13,6 +13,7 @@ class Manager {
   const byte pwrBtnPin = 8;
   const byte mode1BtnPin = 9;
   const byte mode2BtnPin = 10;
+  const byte dialPin = A3;
 
  private:
   ThreadManager threads;  // pointer to our thread manager
@@ -21,12 +22,13 @@ class Manager {
   ButtonTask pwrBtnTask;
   ButtonTask mode1BtnTask;
   ButtonTask mode2BtnTask;
+  DialTask dialTask;
   DisplayTask displayTask;
   LedBlinkTask ledBlinkTask;
   TaskCount taskCount;
 
  public:
-  Manager() : pwrBtnTask(pwrBtnPin), mode1BtnTask(mode1BtnPin), mode2BtnTask(mode2BtnPin) {
+  Manager() : pwrBtnTask(pwrBtnPin), mode1BtnTask(mode1BtnPin), mode2BtnTask(mode2BtnPin), dialTask(dialPin, 4) {
     self = this;
   }
 
@@ -38,6 +40,7 @@ class Manager {
     threads.add("pwrbtn", 7, (unsigned long)25 * 1000, &pwrBtnTask);
     threads.add("md1btn", 7, (unsigned long)25 * 1000, &mode1BtnTask);
     threads.add("md2btn", 7, (unsigned long)25 * 1000, &mode2BtnTask);
+    threads.add("dial", 7, (unsigned long)25 * 1000, &dialTask);
     threads.add("max7219", 8, (unsigned long)50 * 1000, &displayTask);
     threads.add("blink", 8, (unsigned long)500 * 1000, &ledBlinkTask);
 #ifdef DEBUG
@@ -49,6 +52,7 @@ class Manager {
     pwrBtnTask.addOnBtnUpCB(onPwrBtnUp);
     mode1BtnTask.addOnBtnDownCB(onMode1BtnDown);
     mode2BtnTask.addOnBtnDownCB(onMode2BtnDown);
+    dialTask.addOnValChangedCB(onDialChanged);
 
     println(F("setup complete"));
   }
@@ -71,6 +75,12 @@ class Manager {
 
   static void onMode2BtnDown() {
     println(F("mode2 button down"));
+  }
+
+  static void onDialChanged(const unsigned int val) {
+    print(F("dial value: "));
+    println(val);
+    self->displayTask.setIntensity(val);
   }
 
   void run() {

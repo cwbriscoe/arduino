@@ -7,6 +7,6 @@
 
 #define DEBUG
 
-const byte MAX_THREADS = 6;
+const byte MAX_THREADS = 7;
 
 #endif

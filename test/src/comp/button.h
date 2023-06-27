@@ -32,8 +32,7 @@ class Button : public Control {
     }
   }
 
-  inline bool
-  value() { return currState; }
+  inline bool value() { return currState; }
 
   inline bool isOn() { return currState == HIGH; }
   inline bool isOff() { return currState == LOW; }
