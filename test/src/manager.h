@@ -6,6 +6,9 @@
 #include "lib/thread.h"
 #include "tasks.h"
 
+class Manager;
+static Manager* self;  // pointer to Manager instance to be used in static fuction callbacks
+
 class Manager {
   const byte pwrBtnPin = 8;
   const byte mode1BtnPin = 9;
@@ -16,21 +19,20 @@ class Manager {
 
   // task declarations
   ButtonTask pwrBtnTask;
-  Mode1BtnTask mode1BtnTask;
-  Mode2BtnTask mode2BtnTask;
+  ButtonTask mode1BtnTask;
+  ButtonTask mode2BtnTask;
   DisplayTask displayTask;
   LedBlinkTask ledBlinkTask;
   TaskCount taskCount;
 
  public:
-  Manager() : pwrBtnTask(pwrBtnPin), mode1BtnTask(mode1BtnPin), mode2BtnTask(mode2BtnPin) {}
+  Manager() : pwrBtnTask(pwrBtnPin), mode1BtnTask(mode1BtnPin), mode2BtnTask(mode2BtnPin) {
+    self = this;
+  }
 
   void init() {
     // if debugging open serial communication over USB
     enableDebuggingSerialPort();
-
-    // hook up listeners
-    pwrBtnTask.addListener(&displayTask);
 
     // add tasks to the thread manager
     threads.add("pwrbtn", 7, (unsigned long)25 * 1000, &pwrBtnTask);
@@ -42,7 +44,33 @@ class Manager {
     threads.add("counter", 9, (unsigned long)50 * 1000, &taskCount);
 #endif
 
+    // hook up callbacks
+    pwrBtnTask.addOnBtnDownCB(onPwrBtnDown);
+    pwrBtnTask.addOnBtnUpCB(onPwrBtnUp);
+    mode1BtnTask.addOnBtnDownCB(onMode1BtnDown);
+    mode2BtnTask.addOnBtnDownCB(onMode2BtnDown);
+
     println(F("setup complete"));
+  }
+
+  static void onPwrBtnDown() {
+    self->displayTask.toggleEnabled();
+    if (!self->displayTask.isEnabled()) {
+      self->displayTask.clear();
+      self->displayTask.update();
+    }
+  }
+
+  static void onPwrBtnUp() {
+    println(F("power button up"));
+  }
+
+  static void onMode1BtnDown() {
+    println(F("mode1 button down"));
+  }
+
+  static void onMode2BtnDown() {
+    println(F("mode2 button down"));
   }
 
   void run() {

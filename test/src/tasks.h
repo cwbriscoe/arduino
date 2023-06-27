@@ -20,32 +20,6 @@ class LedBlinkTask : public LedTask {
 };
 
 /*****************************************************************************/
-/* Mode1 Button Task                                                         */
-/*****************************************************************************/
-class Mode1BtnTask : public ButtonTask {
- public:
-  Mode1BtnTask(const byte pin) : ButtonTask(pin) {}
-
-  void run(const Time& time) final {
-    ButtonTask::run(time);
-    if (isOn()) println(F("mode1 button on..."));
-  }
-};
-
-/*****************************************************************************/
-/* Mode2 Button Task                                                         */
-/*****************************************************************************/
-class Mode2BtnTask : public ButtonTask {
- public:
-  Mode2BtnTask(const byte pin) : ButtonTask(pin) {}
-
-  void run(const Time& time) final {
-    ButtonTask::run(time);
-    if (isOn()) println(F("mode2 button on..."));
-  }
-};
-
-/*****************************************************************************/
 /* Count Task                                                                */
 /*****************************************************************************/
 class TaskCount : public Task {
@@ -85,15 +59,6 @@ class DisplayTask : public MX7219Task {
     setIntensity(0);
     // Clear the display:
     clear();
-  }
-
-  void onControllerChanged(const unsigned long value) final {
-    if (!value) return;
-    toggleEnabled();
-    if (!isEnabled()) {
-      clear();
-      update();
-    }
   }
 
   void run(const Time& time) final {

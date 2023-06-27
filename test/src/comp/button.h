@@ -10,6 +10,8 @@ class Button : public Control {
   byte pin = 0;
   bool prevState = false;
   bool currState = false;
+  void (*onBtnDownCB)();
+  void (*onBtnUpCB)();
 
  public:
   explicit Button(const byte pin) {
@@ -21,21 +23,23 @@ class Button : public Control {
     currState = (digitalRead(pin) == HIGH);
     if (currState != prevState) {
       prevState = currState;
-      notifyListeners(currState);
+      if (onBtnDownCB && currState == HIGH) {
+        onBtnDownCB();
+        return;
+      }
+      if (onBtnUpCB && currState == LOW)
+        onBtnUpCB();
     }
   }
 
-  inline bool value() {
-    return currState;
-  }
+  inline bool
+  value() { return currState; }
 
-  inline bool isOn() {
-    return currState == HIGH;
-  }
+  inline bool isOn() { return currState == HIGH; }
+  inline bool isOff() { return currState == LOW; }
 
-  inline bool isOff() {
-    return currState == LOW;
-  }
+  inline void addOnBtnDownCB(void (*cb)()) { onBtnDownCB = cb; }
+  inline void addOnBtnUpCB(void (*cb)()) { onBtnUpCB = cb; }
 };
 
 class ButtonTask : public Button, public Task {
