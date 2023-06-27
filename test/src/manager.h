@@ -15,7 +15,7 @@ class Manager {
   ThreadManager threads;  // pointer to our thread manager
 
   // task declarations
-  PwrBtnTask pwrBtnTask;
+  ButtonTask pwrBtnTask;
   Mode1BtnTask mode1BtnTask;
   Mode2BtnTask mode2BtnTask;
   DisplayTask displayTask;

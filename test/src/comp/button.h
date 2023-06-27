@@ -18,7 +18,7 @@ class Button : public Control {
   }
 
   inline void update() {
-    currState = digitalRead(pin) == HIGH;
+    currState = (digitalRead(pin) == HIGH);
     if (currState != prevState) {
       prevState = currState;
       notifyListeners(currState);
@@ -42,7 +42,7 @@ class ButtonTask : public Button, public Task {
  public:
   ButtonTask(const byte pin) : Button(pin) {}
 
-  void run() {
+  void run(const Time&) {
     update();
   }
 };

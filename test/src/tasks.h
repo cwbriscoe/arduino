@@ -20,26 +20,14 @@ class LedBlinkTask : public LedTask {
 };
 
 /*****************************************************************************/
-/* Power Button Task                                                         */
-/*****************************************************************************/
-class PwrBtnTask : public ButtonTask {
- public:
-  PwrBtnTask(const byte pin) : ButtonTask(pin) {}
-
-  void run(const Time&) final {
-    ButtonTask::run();
-  }
-};
-
-/*****************************************************************************/
 /* Mode1 Button Task                                                         */
 /*****************************************************************************/
 class Mode1BtnTask : public ButtonTask {
  public:
   Mode1BtnTask(const byte pin) : ButtonTask(pin) {}
 
-  void run(const Time&) final {
-    ButtonTask::run();
+  void run(const Time& time) final {
+    ButtonTask::run(time);
     if (isOn()) println(F("mode1 button on..."));
   }
 };
@@ -51,8 +39,8 @@ class Mode2BtnTask : public ButtonTask {
  public:
   Mode2BtnTask(const byte pin) : ButtonTask(pin) {}
 
-  void run(const Time&) final {
-    ButtonTask::run();
+  void run(const Time& time) final {
+    ButtonTask::run(time);
     if (isOn()) println(F("mode2 button on..."));
   }
 };
