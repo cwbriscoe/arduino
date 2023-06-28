@@ -15,15 +15,15 @@ class Dial : public Control {
   void (*onValChangedCB)(const unsigned int);
 
  public:
-  explicit Dial(const byte pin, const byte resolution) {
+  explicit Dial(const byte pin, const byte res = ANALOG_MAX_BITS) {
     this->pin = pin;
-    this->res = resolution;
-    assert(this->res <= 10);
+    this->res = res;
+    assert(this->res <= ANALOG_MAX_BITS);
     pinMode(this->pin, INPUT);
   }
 
   inline void update() {
-    auto newVal = analogRead(pin) >> (10 - res);
+    auto newVal = analogRead(pin) >> (ANALOG_MAX_BITS - res);
     if (currVal != newVal && currVal != prevVal1 && currVal != prevVal2) {
       currVal = newVal;
       prevVal1 = currVal;
@@ -42,7 +42,7 @@ class Dial : public Control {
 
 class DialTask : public Dial, public Task {
  public:
-  DialTask(const byte pin, const byte resolution) : Dial(pin, resolution) {}
+  DialTask(const byte pin, const byte res = ANALOG_MAX_BITS) : Dial(pin, res) {}
 
   void run(const Time&) {
     update();

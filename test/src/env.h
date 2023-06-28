@@ -7,6 +7,7 @@
 
 #define DEBUG
 
-const byte MAX_THREADS = 7;
+const byte MAX_THREADS = 7;       // max number ofr threads/tasks that can be added to the thread manager
+const byte ANALOG_MAX_BITS = 10;  // number of bits of data provided in analogRead()
 
 #endif
