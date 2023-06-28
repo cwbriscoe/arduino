@@ -13,7 +13,6 @@ class Time {
  public:
   Time() {
     this->update();
-    this->update();
   }
 
   unsigned long microseconds() const {
