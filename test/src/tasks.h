@@ -48,46 +48,90 @@ class TaskCount : public Task {
 #define CLK_PIN 2
 
 class DisplayTask : public MX7219Task {
+  const unsigned long modeInterval = (unsigned long)15 * 1000 * 1000;
+  const byte modeCount = 2;
+
  private:
   Trigger trigger;
-  byte mxi;
+  Trigger modeTrigger;
+  byte mode = 0;
+  byte mxi = 0;
 
  public:
-  DisplayTask() : MX7219Task(PWR_PIN, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES), trigger(0, true, false), mxi(0) {
+  DisplayTask() : MX7219Task(PWR_PIN, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES),
+                  trigger(0, true, false),
+                  modeTrigger(0, true, false) {
   }
 
   void run(const Time& time) final {
     if (!trigger.triggered(time)) return;
-    if (!this->isEnabled()) {
-      goto RESET;
+    if (modeTrigger.triggered(time)) {
+      modeTrigger.reset(modeInterval);
+      incMode();
     }
+    if (!this->isEnabled()) goto RESET;
 
-    goto TEST;
-
-    clear(0);
-    setChar(MX_COL_SIZE - 1, mxi);
-
-    if (MAX_DEVICES >= 3) {
-      char hex[3];
-
-      sprintf(hex, "%02X", mxi);
-
-      clear(1);
-      setChar((2 * MX_COL_SIZE) - 1, hex[1]);
-      clear(2);
-      setChar((3 * MX_COL_SIZE) - 1, hex[0]);
+    switch (mode) {
+      case 1:
+        rowFull();
+        break;
+      case 2:
+        splitRow();
+        break;
+      default:
+        clear();
+        break;
     }
-
-  TEST:
-    setRow(mxi, 0);
-    mxi++;
-    if (mxi > 7) mxi = 0;
-    setRow(mxi, 255);
 
     update();
 
   RESET:
     trigger.reset((unsigned long)250 * 1000);
+  }
+
+  void incMode() {
+    mxi = 0;
+    clear();
+    mode++;
+    if (mode > modeCount) mode = 1;
+  }
+
+  void decMode() {
+    mxi = 0;
+    clear();
+    mode--;
+    if (mode == 0) mode = modeCount;
+  }
+
+  void rowFull() {
+    setRow(mxi, 0);
+    mxi++;
+    if (mxi > 7) mxi = 0;
+    setRow(mxi, 255);
+  }
+
+  void splitRow() {
+    int a = mxi, b = mxi + 2, c = mxi + 4, d = mxi + 6;
+    if (b > 7) b -= 8;
+    if (c > 7) c -= 8;
+    if (d > 7) d -= 8;
+    setRow(0, a, 0);
+    setRow(1, b, 0);
+    setRow(2, c, 0);
+    setRow(3, d, 0);
+    mxi++;
+    if (mxi > 7) mxi = 0;
+    a = mxi;
+    b = mxi + 2;
+    c = mxi + 4;
+    d = mxi + 6;
+    if (b > 7) b -= 8;
+    if (c > 7) c -= 8;
+    if (d > 7) d -= 8;
+    setRow(0, a, 255);
+    setRow(1, b, 255);
+    setRow(2, c, 255);
+    setRow(3, d, 255);
   }
 };
 
