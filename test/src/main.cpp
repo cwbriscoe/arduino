@@ -2,12 +2,14 @@
 
 #include "manager.h"
 
-Manager manager;
+Manager* manager;
 
 void setup() {
-  manager.init();
+  enableDebuggingSerialPort();
+  manager = new Manager();
+  manager->init();
 }
 
 void loop() {
-  manager.run();
+  manager->run();
 }

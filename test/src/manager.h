@@ -33,9 +33,6 @@ class Manager {
   }
 
   void init() {
-    // if debugging open serial communication over USB
-    enableDebuggingSerialPort();
-
     // add tasks to the thread manager
     threads.add("pwrbtn", 7, (unsigned long)25 * 1000, &pwrBtnTask);
     threads.add("md1btn", 7, (unsigned long)25 * 1000, &mode1BtnTask);

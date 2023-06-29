@@ -10,8 +10,8 @@ class Button : public Control {
   byte pin = 0;
   bool prevState = false;
   bool currState = false;
-  void (*onBtnDownCB)();
-  void (*onBtnUpCB)();
+  void (*onBtnDownCB)() = nullptr;
+  void (*onBtnUpCB)() = nullptr;
 
  public:
   explicit Button(const byte pin) {
