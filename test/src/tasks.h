@@ -54,11 +54,6 @@ class DisplayTask : public MX7219Task {
 
  public:
   DisplayTask() : MX7219Task(PWR_PIN, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES), trigger(0, true, false), mxi(0) {
-    begin();
-    // Set the intensity (brightness) of the display (0-15):
-    setIntensity(0);
-    // Clear the display:
-    clear();
   }
 
   void run(const Time& time) final {
@@ -67,8 +62,10 @@ class DisplayTask : public MX7219Task {
       goto RESET;
     }
 
+    goto TEST;
+
     clear(0);
-    setChar(COL_SIZE - 1, mxi);
+    setChar(MX_COL_SIZE - 1, mxi);
 
     if (MAX_DEVICES >= 3) {
       char hex[3];
@@ -76,13 +73,18 @@ class DisplayTask : public MX7219Task {
       sprintf(hex, "%02X", mxi);
 
       clear(1);
-      setChar((2 * COL_SIZE) - 1, hex[1]);
+      setChar((2 * MX_COL_SIZE) - 1, hex[1]);
       clear(2);
-      setChar((3 * COL_SIZE) - 1, hex[0]);
+      setChar((3 * MX_COL_SIZE) - 1, hex[0]);
     }
 
-    update();
+  TEST:
+    setRow(mxi, 0);
     mxi++;
+    if (mxi > 7) mxi = 0;
+    setRow(mxi, 255);
+
+    update();
 
   RESET:
     trigger.reset((unsigned long)250 * 1000);

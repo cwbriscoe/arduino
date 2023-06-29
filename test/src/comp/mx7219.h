@@ -3,12 +3,11 @@
 #ifndef mx7219_H
 #define mx7219_H
 
-#include <MD_MAX72xx.h>
-
 #include "control.h"
 
 // control registers (1-8 = digits 0-7)
 #define MX_NOOP 0
+#define MX_DIGIT0 1
 #define MX_DECODEMODE 9
 #define MX_INTENSITY 10
 #define MX_SCANLIMIT 11
@@ -34,10 +33,90 @@ class MX7219 : public Control {
   byte intensity;      // brightness of the display
   DeviceInfo* matrix;  // stores the LED matrix buffers
   byte* spiData;       // data buffer for writing to the SPI interface
-  MD_MAX72XX* mx;      // wrapping MD_MAX72XX library for now
 
   inline byte spiDataSize() const {
-    return sizeof(byte) * this->devices * 2;
+    return sizeof(byte) * devices * 2;
+  }
+
+  inline byte spiOffset(const byte dev, const byte digit) {
+    return ((devices - 1) - dev) * 2 + digit;
+  }
+
+  inline void clearSpiBuffer() {
+    memset(spiData, MX_NOOP, spiDataSize());
+  }
+
+  void controlHardware(const byte dev, const byte mode, const int val) {
+    byte opcode = MX_NOOP;
+    byte param = 0;
+
+    // work out data to write
+    switch (mode) {
+      case MX_SHUTDOWN:
+        opcode = MX_SHUTDOWN;
+        param = (val == 0 ? 1 : 0);
+        break;
+      case MX_SCANLIMIT:
+        opcode = MX_SCANLIMIT;
+        param = (val > 7 ? 7 : val);
+        break;
+      case MX_INTENSITY:
+        opcode = MX_INTENSITY;
+        param = (val > 15 ? 15 : val);
+        break;
+      case MX_DECODEMODE:
+        opcode = MX_DECODEMODE;
+        param = (val == 0 ? 0 : 0xff);
+        break;
+      case MX_DISPLAYTEST:
+        opcode = MX_DISPLAYTEST;
+        param = (val == 0 ? 0 : 1);
+        break;
+      default:
+        return;
+    }
+
+    // put our device data into the buffer
+    spiData[spiOffset(dev, 0)] = opcode;
+    spiData[spiOffset(dev, 1)] = param;
+  }
+
+  void spiSend() {
+    digitalWrite(csPin, LOW);
+
+    auto sz = spiDataSize();
+
+    for (auto i = 0; i < sz; i++) {
+      auto val = spiData[i];
+      for (byte j = 0; j < 8; j++) {
+        digitalWrite(dataPin, (val & 0x80) != 0);
+        val <<= 1;
+        digitalWrite(clkPin, HIGH);
+        digitalWrite(clkPin, LOW);
+      }
+    }
+
+    digitalWrite(csPin, HIGH);
+  }
+
+  void flush() {
+    for (auto i = 0; i < MX_ROW_SIZE; i++) {  // all data rows
+      auto changed = false;                   // set to true if we detected a change
+      clearSpiBuffer();
+
+      for (auto dev = 0; dev < devices; dev++) {  // all devices
+        if (bitRead(matrix[dev].changed, i)) {
+          //  put our device data into the buffer
+          spiData[spiOffset(dev, 0)] = MX_DIGIT0 + i;
+          spiData[spiOffset(dev, 1)] = matrix[dev].row[i];
+          changed = true;
+        }
+      }
+      if (changed) spiSend();
+    }
+
+    for (auto dev = 0; dev < devices; dev++)  // reset the device changed flag
+      matrix[dev].changed = 0;
   }
 
  public:
@@ -49,9 +128,11 @@ class MX7219 : public Control {
     this->devices = devices;
     this->intensity = 0;
 
-    // allocate memory needed for buffers
+    // allocate memory needed for buffers anc clear them
     this->matrix = new DeviceInfo[this->devices];
     this->spiData = new byte[this->spiDataSize()];
+    clear();
+    clearSpiBuffer();
 
     // set all pins to output
     pinMode(this->pwrPin, OUTPUT);
@@ -62,33 +143,56 @@ class MX7219 : public Control {
     digitalWrite(this->pwrPin, HIGH);
 
     // initialize driver and turn auto updates off
-    mx = new MD_MAX72XX(MD_MAX72XX::FC16_HW, this->dataPin, this->clkPin, this->csPin, this->devices);
-    mx->control(MD_MAX72XX::UPDATE, MD_MAX72XX::OFF);
+    // mx = new MD_MAX72XX(MD_MAX72XX::FC16_HW, this->dataPin, this->clkPin, this->csPin, this->devices);
+    // control(MD_MAX72XX::UPDATE, MD_MAX72XX::OFF);
+    control(MX_DISPLAYTEST, 0);              // no test
+    control(MX_SCANLIMIT, MX_ROW_SIZE - 1);  // scan limit is set to max on startup
+    control(MX_DECODEMODE, 0);               // ensure no decoding (warm boot potential issue)
+    control(MX_SHUTDOWN, 0);                 // take the modules out of shutdown mode
+
+    setIntensity(0);  // default to lowest brightness
   }
 
   void setIntensity(const byte intensity) {
     this->intensity = intensity;
-    mx->control(MD_MAX72XX::INTENSITY, this->intensity);
+    control(MX_INTENSITY, this->intensity);
   }
 
-  bool begin() {
-    return mx->begin();
+  void clear(const byte dev) {
+    memset(matrix[dev].row, 0, sizeof(matrix[dev].row));
+    matrix[dev].changed = 0xff;
   }
 
   void clear() {
-    mx->clear();
+    for (byte dev = 0; dev < devices; dev++) {
+      clear(dev);
+    }
   }
 
-  void clear(const byte device) {
-    mx->clear(device);
+  void control(const byte mode, const int val) {
+    clearSpiBuffer();
+    for (auto dev = 0; dev < devices; dev++)
+      controlHardware(dev, mode, val);
+    spiSend();
   }
 
   void update() {
-    mx->update();
+    flush();
+  }
+
+  void setRow(const byte dev, const byte row, const byte val) {
+    matrix[dev].row[row] = val;
+    bitSet(matrix[dev].changed, row);
+  }
+
+  void setRow(const byte row, const byte val) {
+    for (byte dev = 0; dev < devices; dev++) {
+      setRow(dev, row, val);
+    }
   }
 
   void setChar(const unsigned int column, const unsigned int chr) {
-    mx->setChar(column, chr);
+    // mx->setChar(column, chr);
   }
 };
 
