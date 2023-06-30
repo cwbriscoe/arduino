@@ -49,12 +49,12 @@ class TaskCount : public Task {
 
 class DisplayTask : public MX7219Task {
   const unsigned long modeInterval = (unsigned long)15 * 1000 * 1000;
-  const byte modeCount = 2;
+  const byte modeCount = 3;
 
  private:
   Trigger trigger;
   Trigger modeTrigger;
-  byte mode = 0;
+  byte mode = 2;
   byte mxi = 0;
 
  public:
@@ -73,10 +73,13 @@ class DisplayTask : public MX7219Task {
 
     switch (mode) {
       case 1:
-        rowFull();
+        demoRowFull();
         break;
       case 2:
-        splitRow();
+        demoSplitRow();
+        break;
+      case 3:
+        demoPoints();
         break;
       default:
         clear();
@@ -103,14 +106,14 @@ class DisplayTask : public MX7219Task {
     if (mode == 0) mode = modeCount;
   }
 
-  void rowFull() {
+  void demoRowFull() {
     setRow(mxi, 0);
     mxi++;
     if (mxi > 7) mxi = 0;
     setRow(mxi, 255);
   }
 
-  void splitRow() {
+  void demoSplitRow() {
     int a = mxi, b = mxi + 2, c = mxi + 4, d = mxi + 6;
     if (b > 7) b -= 8;
     if (c > 7) c -= 8;
@@ -132,6 +135,21 @@ class DisplayTask : public MX7219Task {
     setRow(1, b, 255);
     setRow(2, c, 255);
     setRow(3, d, 255);
+  }
+
+  void demoPoints() {
+    for (auto dev = 0; dev < MAX_DEVICES; dev++) {
+      for (auto i = 0; i < 8; i++) {
+        auto row = random(0, 8);
+        auto col = random(0, 8);
+        setPoint(dev, row, col, false);
+      }
+      for (auto i = 0; i < 8; i++) {
+        auto row = random(0, 8);
+        auto col = random(0, 8);
+        setPoint(dev, row, col, true);
+      }
+    }
   }
 };
 

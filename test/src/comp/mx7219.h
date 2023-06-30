@@ -143,8 +143,6 @@ class MX7219 : public Control {
     digitalWrite(this->pwrPin, HIGH);
 
     // initialize driver and turn auto updates off
-    // mx = new MD_MAX72XX(MD_MAX72XX::FC16_HW, this->dataPin, this->clkPin, this->csPin, this->devices);
-    // control(MD_MAX72XX::UPDATE, MD_MAX72XX::OFF);
     control(MX_DISPLAYTEST, 0);              // no test
     control(MX_SCANLIMIT, MX_ROW_SIZE - 1);  // scan limit is set to max on startup
     control(MX_DECODEMODE, 0);               // ensure no decoding (warm boot potential issue)
@@ -188,6 +186,21 @@ class MX7219 : public Control {
   void setRow(const byte row, const byte val) {
     for (byte dev = 0; dev < devices; dev++) {
       setRow(dev, row, val);
+    }
+  }
+
+  void setPoint(const byte dev, const byte row, const byte col, const bool lit) {
+    if (lit) {
+      bitSet(matrix[dev].row[row], col);
+    } else {
+      bitClear(matrix[dev].row[row], col);
+    }
+    bitSet(matrix[dev].changed, row);
+  }
+
+  void setPoint(const byte row, const byte col, const bool lit) {
+    for (byte dev = 0; dev < devices; dev++) {
+      setPoint(dev, row, col, lit);
     }
   }
 
