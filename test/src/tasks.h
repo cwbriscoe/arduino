@@ -49,12 +49,12 @@ class TaskCount : public Task {
 
 class DisplayTask : public MX7219Task {
   const unsigned long modeInterval = (unsigned long)15 * 1000 * 1000;
-  const byte modeCount = 3;
+  const byte modeCount = 5;
 
  private:
   Trigger trigger;
   Trigger modeTrigger;
-  byte mode = 2;
+  byte mode = 4;
   byte mxi = 0;
 
  public:
@@ -79,6 +79,12 @@ class DisplayTask : public MX7219Task {
         demoSplitRow();
         break;
       case 3:
+        demoColumn();
+        break;
+      case 4:
+        demoSplitColumn();
+        break;
+      case 5:
         demoPoints();
         break;
       default:
@@ -89,7 +95,7 @@ class DisplayTask : public MX7219Task {
     update();
 
   RESET:
-    trigger.reset((unsigned long)250 * 1000);
+    trigger.reset((unsigned long)150 * 1000);
   }
 
   void incMode() {
@@ -135,6 +141,24 @@ class DisplayTask : public MX7219Task {
     setRow(1, b, 255);
     setRow(2, c, 255);
     setRow(3, d, 255);
+  }
+
+  void demoColumn() {
+    setCol(mxi, 0);
+    mxi++;
+    if (mxi > 7) mxi = 0;
+    setCol(mxi, 255);
+  }
+
+  void demoSplitColumn() {
+    auto mxj = 7 - mxi;
+    setCol(mxi, 0x00);
+    setCol(mxj, 0x00);
+    mxi++;
+    if (mxi > 7) mxi = 0;
+    mxj = 7 - mxi;
+    setCol(mxi, 0x0f);
+    setCol(mxj, 0xf0);
   }
 
   void demoPoints() {

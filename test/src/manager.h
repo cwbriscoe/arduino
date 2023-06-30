@@ -68,12 +68,12 @@ class Manager {
 
   static void onMode1BtnDown() {
     println(F("mode1 button down"));
-    self->displayTask.incMode();
+    self->displayTask.decMode();
   }
 
   static void onMode2BtnDown() {
     println(F("mode2 button down"));
-    self->displayTask.decMode();
+    self->displayTask.incMode();
   }
 
   static void onDialChanged(const unsigned int val) {

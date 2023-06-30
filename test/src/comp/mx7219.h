@@ -189,6 +189,23 @@ class MX7219 : public Control {
     }
   }
 
+  void setCol(const byte dev, const byte col, const byte val) {
+    for (auto row = 0; row < MX_COL_SIZE; row++) {
+      if (val & (1 << row)) {
+        bitSet(matrix[dev].row[row], col);
+      } else {
+        bitClear(matrix[dev].row[row], col);
+      }
+      bitSet(matrix[dev].changed, row);
+    }
+  }
+
+  void setCol(const byte col, const byte val) {
+    for (byte dev = 0; dev < devices; dev++) {
+      setCol(dev, col, val);
+    }
+  }
+
   void setPoint(const byte dev, const byte row, const byte col, const bool lit) {
     if (lit) {
       bitSet(matrix[dev].row[row], col);
