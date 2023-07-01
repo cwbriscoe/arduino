@@ -24,7 +24,7 @@ class Time {
 
   void add(const unsigned long duration) {
     assert(duration < MAX_TIME);
-    this->update();
+    // this->update();
     if (MAX_TIME - this->time < duration) {
       this->time = duration - (MAX_TIME - this->time);
       this->gens++;

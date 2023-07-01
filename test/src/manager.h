@@ -38,7 +38,7 @@ class Manager {
     threads.add("md1btn", 7, (unsigned long)25 * 1000, &mode1BtnTask);
     threads.add("md2btn", 7, (unsigned long)25 * 1000, &mode2BtnTask);
     threads.add("dial", 7, (unsigned long)25 * 1000, &dialTask);
-    threads.add("max7219", 8, (unsigned long)50 * 1000, &displayTask);
+    threads.add("max7219", 8, (unsigned long)40 * 1000, &displayTask);
     threads.add("blink", 8, (unsigned long)500 * 1000, &ledBlinkTask);
 #ifdef DEBUG
     threads.add("counter", 9, (unsigned long)50 * 1000, &taskCount);

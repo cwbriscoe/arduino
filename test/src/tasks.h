@@ -48,7 +48,7 @@ class TaskCount : public Task {
 #define CLK_PIN 2
 
 class DisplayTask : public MX7219Task {
-  const unsigned long modeInterval = (unsigned long)15 * 1000 * 1000;
+  const unsigned long modeInterval = (unsigned long)7 * 1000 * 1000;
   const byte modeCount = 5;
 
  private:
@@ -95,7 +95,8 @@ class DisplayTask : public MX7219Task {
     update();
 
   RESET:
-    trigger.reset((unsigned long)150 * 1000);
+    // trigger.reset((unsigned long)150 * 1000);
+    trigger.reset((unsigned long)40);
   }
 
   void incMode() {
@@ -163,12 +164,12 @@ class DisplayTask : public MX7219Task {
 
   void demoPoints() {
     for (auto dev = 0; dev < MAX_DEVICES; dev++) {
-      for (auto i = 0; i < 8; i++) {
+      for (auto i = 0; i < 5; i++) {
         auto row = random(0, 8);
         auto col = random(0, 8);
         setPoint(dev, row, col, false);
       }
-      for (auto i = 0; i < 8; i++) {
+      for (auto i = 0; i < 5; i++) {
         auto row = random(0, 8);
         auto col = random(0, 8);
         setPoint(dev, row, col, true);
