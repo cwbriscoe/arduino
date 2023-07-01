@@ -47,14 +47,19 @@ class TaskCount : public Task {
 #define DATA_PIN 4
 #define CLK_PIN 2
 
+struct Coord {
+  byte x;
+  byte y;
+};
+
 class DisplayTask : public MX7219Task {
   const unsigned long modeInterval = (unsigned long)7 * 1000 * 1000;
-  const byte modeCount = 5;
+  const byte modeCount = 7;
 
  private:
   Trigger trigger;
   Trigger modeTrigger;
-  byte mode = 4;
+  byte mode = 0;
   byte mxi = 0;
 
  public:
@@ -86,6 +91,12 @@ class DisplayTask : public MX7219Task {
         break;
       case 5:
         demoPoints();
+        break;
+      case 6:
+        demoBounce();
+        break;
+      case 7:
+        demoWorms();
         break;
       default:
         clear();
@@ -173,6 +184,128 @@ class DisplayTask : public MX7219Task {
         auto row = random(0, 8);
         auto col = random(0, 8);
         setPoint(dev, row, col, true);
+      }
+    }
+  }
+
+  void demoBounce() {
+    struct Dot {
+      Coord coord = {(byte)random(1, 30), (byte)random(1, 7)};
+      bool xDir = random(0, 2);
+      bool yDir = random(0, 2);
+    };
+    static Dot dots[8];
+
+    for (auto i = 0; i < 8; i++) {
+      if (dots[i].coord.x == 0 || dots[i].coord.x == 31) {
+        dots[i].xDir = !dots[i].xDir;
+      }
+      if (dots[i].coord.y == 0 || dots[i].coord.y == 7) {
+        dots[i].yDir = !dots[i].yDir;
+      }
+      setPointXY(dots[i].coord.x, dots[i].coord.y, false);
+      byte spd = 1;
+      if (random(0, 100) > 80) {
+        if (dots[i].coord.x > 1 && dots[i].coord.x < 30 && dots[i].coord.y > 1 && dots[i].coord.y < 6)
+          spd = 2;
+      }
+      if (dots[i].xDir) {
+        dots[i].coord.x += spd;
+      } else {
+        dots[i].coord.x -= spd;
+      }
+      if (dots[i].yDir) {
+        dots[i].coord.y += spd;
+      } else {
+        dots[i].coord.y -= spd;
+      }
+      setPointXY(dots[i].coord.x, dots[i].coord.y, true);
+      for (auto j = 0; j < 8; j++) {
+        if (i == j) continue;
+        if (dots[i].coord.x == dots[j].coord.x && dots[i].coord.y == dots[j].coord.y) {
+          if (dots[i].coord.x > 1 && dots[i].coord.x < 30 && dots[i].coord.y > 1 && dots[i].coord.y < 6) {
+            if (random(0, 100) > 50) {
+              dots[i].xDir = !dots[i].xDir;
+            } else {
+              dots[i].yDir = !dots[i].yDir;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void demoWorms() {
+    struct Worm {
+      Coord coord[5] = {{(byte)random(0, 31), (byte)random(0, 8)}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
+      byte size = 1;
+      bool xAxis = random(0, 2);
+      bool dir = random(0, 2);
+    };
+    static Worm worms[5];
+
+    clear();
+
+    for (auto i = 0; i < 5; i++) {
+      worms[i].size++;
+      if (worms[i].size > 5) worms[i].size = 5;
+
+      for (auto j = (worms[i].size - 2); j >= 0; j--) {
+        worms[i].coord[j + 1].x = worms[i].coord[j].x;
+        worms[i].coord[j + 1].y = worms[i].coord[j].y;
+      }
+
+      auto prevAxis = worms[i].xAxis;
+      if (worms[i].xAxis) {
+        if (worms[i].coord[1].x == 31 || worms[i].coord[1].x == 0) {
+          worms[i].xAxis = false;
+          worms[i].dir = random(0, 2);
+          if ((worms[i].dir && worms[i].coord[1].y == 7) || (!worms[i].dir && worms[i].coord[1].y == 0)) {
+            worms[i].dir = !worms[i].dir;
+          }
+        }
+      } else {
+        if (worms[i].coord[1].y == 7 || worms[i].coord[1].y == 0) {
+          worms[i].xAxis = true;
+          worms[i].dir = random(0, 2);
+          if ((worms[i].dir && worms[i].coord[1].x == 31) || (!worms[i].dir && worms[i].coord[1].x == 0)) {
+            worms[i].dir = !worms[i].dir;
+          }
+        }
+      }
+
+      if ((prevAxis == worms[i].xAxis) && random(0, 100) > 90) {
+        if (worms[i].xAxis) {
+          worms[i].xAxis = false;
+          worms[i].dir = random(0, 2);
+          if ((worms[i].dir && worms[i].coord[1].y == 7) || (!worms[i].dir && worms[i].coord[1].y == 0)) {
+            worms[i].dir = !worms[i].dir;
+          }
+        } else {
+          worms[i].xAxis = true;
+          worms[i].dir = random(0, 2);
+          if ((worms[i].dir && worms[i].coord[1].x == 31) || (!worms[i].dir && worms[i].coord[1].x == 0)) {
+            worms[i].dir = !worms[i].dir;
+          }
+        }
+      }
+
+      if (worms[i].xAxis) {
+        if (worms[i].dir) {
+          worms[i].coord[0].x = worms[i].coord[1].x + 1;
+        } else {
+          worms[i].coord[0].x = worms[i].coord[1].x - 1;
+        }
+      } else {
+        if (worms[i].dir) {
+          worms[i].coord[0].y = worms[i].coord[1].y + 1;
+        } else {
+          worms[i].coord[0].y = worms[i].coord[1].y - 1;
+        }
+      }
+
+      for (auto j = 0; j < worms[i].size; j++) {
+        setPointXY(worms[i].coord[j].x, worms[i].coord[j].y, true);
       }
     }
   }

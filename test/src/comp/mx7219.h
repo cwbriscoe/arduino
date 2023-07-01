@@ -221,6 +221,11 @@ class MX7219 : public Control {
     }
   }
 
+  void setPointXY(const byte x, const byte y, const bool lit) {
+    byte dev = (devices - 1) - (x >> 3);
+    setPoint(dev, 7 - y, 7 - (x & 7), lit);
+  }
+
   void setChar(const unsigned int column, const unsigned int chr) {
     // mx->setChar(column, chr);
   }
