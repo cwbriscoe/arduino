@@ -87,13 +87,7 @@ class MX7219 : public Control {
     auto sz = spiDataSize();
 
     for (auto i = 0; i < sz; i++) {
-      auto val = spiData[i];
-      for (byte j = 0; j < 8; j++) {
-        digitalWrite(dataPin, (val & 0x80) != 0);
-        val <<= 1;
-        digitalWrite(clkPin, HIGH);
-        digitalWrite(clkPin, LOW);
-      }
+      shiftOut(dataPin, clkPin, MSBFIRST, spiData[i]);
     }
 
     digitalWrite(csPin, HIGH);
