@@ -54,12 +54,12 @@ struct Coord {
 
 class DisplayTask : public MX7219Task {
   const unsigned long modeInterval = (unsigned long)7 * 1000 * 1000;
-  const byte modeCount = 7;
+  const byte modeCount = 8;
 
  private:
   Trigger trigger;
   Trigger modeTrigger;
-  byte mode = 0;
+  byte mode = 8;
   byte mxi = 0;
 
  public:
@@ -70,10 +70,10 @@ class DisplayTask : public MX7219Task {
 
   void run(const Time& time) final {
     if (!trigger.triggered(time)) return;
-    if (modeTrigger.triggered(time)) {
-      modeTrigger.reset(modeInterval);
-      incMode();
-    }
+    // if (modeTrigger.triggered(time)) {
+    //   modeTrigger.reset(modeInterval);
+    //   incMode();
+    // }
     if (!this->isEnabled()) goto RESET;
 
     switch (mode) {
@@ -97,6 +97,9 @@ class DisplayTask : public MX7219Task {
         break;
       case 7:
         demoWorms();
+        break;
+      case 8:
+        demoSineWave();
         break;
       default:
         clear();
@@ -274,7 +277,7 @@ class DisplayTask : public MX7219Task {
         }
       }
 
-      if ((prevAxis == worms[i].xAxis) && random(0, 100) > 90) {
+      if ((prevAxis == worms[i].xAxis) && random(0, 100) > 85) {
         if (worms[i].xAxis) {
           worms[i].xAxis = false;
           worms[i].dir = random(0, 2);
@@ -308,6 +311,37 @@ class DisplayTask : public MX7219Task {
         setPointXY(worms[i].coord[j].x, worms[i].coord[j].y, true);
       }
     }
+  }
+
+  void demoSineWave() {
+    static float radians = 0.0f;
+    static float incDivisor = 10.0f;
+    static float inc = 2 * PI / incDivisor;
+
+    clear();
+    auto currRadians = radians;
+    byte prevY = 255;
+
+    for (byte x = 0; x < 32; x++) {
+      byte y = sin(currRadians) * 4 + 4;
+      if (y > 7) y = 7;
+      if (prevY < 255 && prevY < y) {
+        for (auto i = prevY + 1; i <= y; i++) {
+          setPointXY(x, i, true);
+        }
+      } else if (prevY < 255 && prevY > y) {
+        for (auto i = prevY - 1; i >= y; i--) {
+          setPointXY(x, i, true);
+        }
+      } else {
+        setPointXY(x, y, true);
+      }
+      currRadians += inc;
+      prevY = y;
+    }
+
+    radians += inc;
+    if (radians > 2 * PI) radians -= 2 * PI;
   }
 };
 
