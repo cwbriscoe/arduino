@@ -33,6 +33,7 @@ class MX7219 : public Control {
   byte intensity;          // brightness of the display
   DeviceInfo* currMatrix;  // stores the LED matrix buffers for the current frame
   DeviceInfo* prevMatrix;  // stores the LED matrix buffers for the previous frame
+  byte* rowCounts;         // keep track of which rows for each device that have been sent
   byte* busData;           // data buffer for writing to the data bus
 
   inline byte busDataSize() const {
@@ -95,20 +96,26 @@ class MX7219 : public Control {
   }
 
   void flush() {
-    for (auto i = 0; i < MX_ROW_SIZE; i++) {  // all data rows
-      auto changed = false;                   // set to true if we detected a change
-      clearBusBuffer();
+    memset(rowCounts, 0, sizeof(byte) * devices);
 
-      for (auto dev = 0; dev < devices; dev++) {  // all devices
-        if (currMatrix[dev].row[i] != prevMatrix[dev].row[i]) {
-          //  put our device data into the buffer
-          busData[busOffset(dev, 0)] = MX_DIGIT0 + i;
-          busData[busOffset(dev, 1)] = currMatrix[dev].row[i];
-          changed = true;
+    bool changed;
+    do {
+      changed = false;
+      clearBusBuffer();
+      for (byte dev = 0; dev < devices; dev++) {
+        while ((rowCounts[dev] < MX_ROW_SIZE)) {
+          if (currMatrix[dev].row[rowCounts[dev]] != prevMatrix[dev].row[rowCounts[dev]]) {
+            busData[busOffset(dev, 0)] = MX_DIGIT0 + rowCounts[dev];
+            busData[busOffset(dev, 1)] = currMatrix[dev].row[rowCounts[dev]];
+            rowCounts[dev]++;
+            changed = true;
+            break;
+          }
+          rowCounts[dev]++;
         }
       }
       if (changed) busSend();
-    }
+    } while (changed);
 
     for (byte dev = 0; dev < devices; dev++)
       memcpy(&prevMatrix[dev], &currMatrix[dev], sizeof(currMatrix[dev]));
@@ -126,6 +133,7 @@ class MX7219 : public Control {
     // allocate memory needed for buffers anc clear them
     this->currMatrix = new DeviceInfo[this->devices];
     this->prevMatrix = new DeviceInfo[this->devices];
+    this->rowCounts = new byte[this->devices];
     this->busData = new byte[this->busDataSize()];
     clear();
     clearBusBuffer();

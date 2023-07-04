@@ -405,14 +405,9 @@ class DisplayTask : public MX7219Task {
   void demoFont() {
     const byte maxDigits = 65;
     static byte currDigit = 0;
-    static unsigned long prevTime = millis();
 
-    auto currTime = millis();
-    if (currTime - prevTime > 600) {
-      prevTime = currTime;
-      currDigit++;
-      if (currDigit == maxDigits) currDigit = 0;
-    }
+    currDigit++;
+    if (currDigit == maxDigits) currDigit = 0;
 
     auto idx = currDigit;
     setDigit(3, idx);

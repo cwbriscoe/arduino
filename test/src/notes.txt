@@ -1,11 +1,11 @@
-demoRowFull          5.22
-demoSplitRow        19.10
-demoColumn          20.17
-demoSplitColumn     21.23
-demoPoints          38.59
-demoBounce          19.54
-demoWorms           21.43
-demoSawtooth        20.18
-demoSineWave        32.41
-demoFont            17.26
-all(loop)           21.52     20.41
+demoRowFull          5.22      5.25
+demoSplitRow        19.10      5.24
+demoColumn          20.17     20.04
+demoSplitColumn     21.23     20.61
+demoPoints          38.59     31.20
+demoBounce          19.54     14.92
+demoWorms           21.43     10.62
+demoSawtooth        20.18     13.03
+demoSineWave        32.41     32.23
+demoFont            17.26     16.74
+all(loop)           21.52     16.97
