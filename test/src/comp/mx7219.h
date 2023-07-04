@@ -4,6 +4,7 @@
 #define mx7219_H
 
 #include "control.h"
+#include "font.h"
 
 // control registers (1-8 = digits 0-7)
 #define MX_NOOP 0
@@ -173,6 +174,8 @@ class MX7219 : public Control {
   }
 
   void setRow(const byte dev, const byte row, const byte val) {
+    assert(dev < devices);
+    assert(row < MX_ROW_SIZE);
     matrix[dev].row[row] = val;
     bitSet(matrix[dev].changed, row);
   }
@@ -184,6 +187,8 @@ class MX7219 : public Control {
   }
 
   void setCol(const byte dev, const byte col, const byte val) {
+    assert(dev < devices);
+    assert(col < MX_COL_SIZE);
     for (auto row = 0; row < MX_COL_SIZE; row++) {
       if (val & (1 << row)) {
         bitSet(matrix[dev].row[row], col);
@@ -201,6 +206,9 @@ class MX7219 : public Control {
   }
 
   void setPoint(const byte dev, const byte row, const byte col, const bool lit) {
+    assert(dev < devices);
+    assert(row < MX_ROW_SIZE);
+    assert(col < MX_COL_SIZE);
     if (lit) {
       bitSet(matrix[dev].row[row], col);
     } else {
@@ -220,8 +228,21 @@ class MX7219 : public Control {
     setPoint(dev, 7 - y, 7 - (x & 7), lit);
   }
 
-  void setChar(const unsigned int column, const unsigned int chr) {
-    // mx->setChar(column, chr);
+  byte getChar(const char chr) {
+    if (chr < 32) { return 0; }
+    if (chr > 95) { return 0; }
+    return chr - 32;
+  }
+
+  void setDigit(const byte dev, const byte digit) {
+    for (auto i = 0; i < 7; i++) {
+      auto bits = pgm_read_byte(&font[digit][i]);
+      setRow(dev, i, bits);
+    }
+  }
+
+  void setChar(const byte dev, const char chr) {
+    setDigit(dev, getChar(chr));
   }
 };
 
@@ -229,45 +250,6 @@ class MX7219Task : public MX7219, public Task {
  public:
   MX7219Task(const byte pwrPin, const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1)
       : MX7219(pwrPin, dataPin, clkPin, csPin, devices) {}
-};
-
-const byte PROGMEM font[] = {
-    5, 62, 81, 73, 69, 62,   // 48 - '0'
-    3, 4, 2, 127,            // 49 - '1'
-    5, 113, 73, 73, 73, 70,  // 50 - '2'
-    5, 65, 73, 73, 73, 54,   // 51 - '3'
-    5, 15, 8, 8, 8, 127,     // 52 - '4'
-    5, 79, 73, 73, 73, 49,   // 53 - '5'
-    5, 62, 73, 73, 73, 48,   // 54 - '6'
-    5, 3, 1, 1, 1, 127,      // 55 - '7'
-    5, 54, 73, 73, 73, 54,   // 56 - '8'
-    5, 6, 73, 73, 73, 62,    // 57 - '9'
-    5, 126, 9, 9, 9, 126,    // 65 - 'A'
-    5, 127, 73, 73, 73, 54,  // 66 - 'B'
-    5, 62, 65, 65, 65, 65,   // 67 - 'C'
-    5, 127, 65, 65, 65, 62,  // 68 - 'D'
-    5, 127, 73, 73, 73, 65,  // 69 - 'E'
-    5, 127, 9, 9, 9, 1,      // 70 - 'F'
-    5, 62, 65, 65, 73, 121,  // 71 - 'G'
-    5, 127, 8, 8, 8, 127,    // 72 - 'H'
-    3, 65, 127, 65,          // 73 - 'I'
-    5, 48, 65, 65, 65, 63,   // 74 - 'J'
-    5, 127, 8, 20, 34, 65,   // 75 - 'K'
-    5, 127, 64, 64, 64, 64,  // 76 - 'L'
-    5, 127, 2, 12, 2, 127,   // 77 - 'M'
-    5, 127, 4, 8, 16, 127,   // 78 - 'N'
-    5, 62, 65, 65, 65, 62,   // 79 - 'O'
-    5, 127, 9, 9, 9, 6,      // 80 - 'P'
-    5, 62, 65, 65, 97, 126,  // 81 - 'Q'
-    5, 127, 9, 25, 41, 70,   // 82 - 'R'
-    5, 70, 73, 73, 73, 49,   // 83 - 'S'
-    5, 1, 1, 127, 1, 1,      // 84 - 'T'
-    5, 63, 64, 64, 64, 63,   // 85 - 'U'
-    5, 31, 32, 64, 32, 31,   // 86 - 'V'
-    5, 63, 64, 56, 64, 63,   // 87 - 'W'
-    5, 99, 20, 8, 20, 99,    // 88 - 'X'
-    5, 3, 4, 120, 4, 3,      // 89 - 'Y'
-    5, 97, 81, 73, 69, 67,   // 90 - 'Z'
 };
 
 #endif

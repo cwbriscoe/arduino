@@ -54,12 +54,12 @@ struct Coord {
 
 class DisplayTask : public MX7219Task {
   const unsigned long modeInterval = (unsigned long)7 * 1000 * 1000;
-  const byte modeCount = 8;
+  const byte modeCount = 9;
 
  private:
   Trigger trigger;
   Trigger modeTrigger;
-  byte mode = 8;
+  byte mode = 0;
   byte mxi = 0;
 
  public:
@@ -70,10 +70,10 @@ class DisplayTask : public MX7219Task {
 
   void run(const Time& time) final {
     if (!trigger.triggered(time)) return;
-    // if (modeTrigger.triggered(time)) {
-    //   modeTrigger.reset(modeInterval);
-    //   incMode();
-    // }
+    if (modeTrigger.triggered(time)) {
+      modeTrigger.reset(modeInterval);
+      incMode();
+    }
     if (!this->isEnabled()) goto RESET;
 
     switch (mode) {
@@ -100,6 +100,9 @@ class DisplayTask : public MX7219Task {
         break;
       case 8:
         demoSineWave();
+        break;
+      case 9:
+        demoFont();
         break;
       default:
         clear();
@@ -342,6 +345,31 @@ class DisplayTask : public MX7219Task {
 
     radians += inc;
     if (radians > 2 * PI) radians -= 2 * PI;
+  }
+
+  void demoFont() {
+    const byte maxDigits = 65;
+    static byte currDigit = 0;
+    static unsigned long prevTime = millis();
+
+    auto currTime = millis();
+    if (currTime - prevTime > 600) {
+      prevTime = currTime;
+      currDigit++;
+      if (currDigit == maxDigits) currDigit = 0;
+    }
+
+    auto idx = currDigit;
+    setDigit(3, idx);
+    idx++;
+    if (idx == maxDigits) idx = 0;
+    setDigit(2, idx);
+    idx++;
+    if (idx == maxDigits) idx = 0;
+    setDigit(1, idx);
+    idx++;
+    if (idx == maxDigits) idx = 0;
+    setDigit(0, idx);
   }
 };
 
