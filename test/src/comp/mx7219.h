@@ -230,7 +230,7 @@ class MX7219 : public Control {
 
   byte getChar(const char chr) {
     if (chr < 32) { return 0; }
-    if (chr > 95) { return 0; }
+    if (chr > 122) { return 0; }
     return chr - 32;
   }
 
