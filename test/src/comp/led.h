@@ -3,7 +3,7 @@
 #ifndef LED_H
 #define LED_H
 
-#include "control.h"
+#include "inc/control.h"
 
 class Led : public Control {
  private:

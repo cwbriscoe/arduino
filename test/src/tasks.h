@@ -3,7 +3,7 @@
 #ifndef TASKS_H
 #define TASKS_H
 
-#include "comp/comp.h"
+#include "comp/inc/comp.h"
 #include "lib/debug.h"
 #include "lib/task.h"
 

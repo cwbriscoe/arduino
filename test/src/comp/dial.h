@@ -3,7 +3,7 @@
 #ifndef DIAL_H
 #define DIAL_H
 
-#include "control.h"
+#include "inc/control.h"
 
 class Dial : public Control {
  private:

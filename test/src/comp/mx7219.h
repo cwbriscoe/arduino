@@ -3,8 +3,8 @@
 #ifndef mx7219_H
 #define mx7219_H
 
-#include "control.h"
-#include "font.h"
+#include "inc/control.h"
+#include "inc/font.h"
 
 // control registers (1-8 = digits 0-7)
 #define MX_NOOP 0
