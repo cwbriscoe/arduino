@@ -1,0 +1,11 @@
+demoRowFull          5.22
+demoSplitRow        19.10
+demoColumn          20.17
+demoSplitColumn     21.23
+demoPoints          38.59
+demoBounce          19.54
+demoWorms           21.43
+demoSawtooth        20.18
+demoSineWave        32.41
+demoFont            17.26
+all(loop)           21.52     20.41

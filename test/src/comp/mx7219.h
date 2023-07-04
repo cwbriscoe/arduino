@@ -23,28 +23,28 @@ class MX7219 : public Control {
  private:
   struct DeviceInfo {
     byte row[MX_ROW_SIZE];  // data for each row 0=OFF 1=ON
-    byte changed;           // each bit is 1 if the row has changed
   };
 
-  byte pwrPin;         // pin used to supply power
-  byte dataPin;        // output where data is sent
-  byte clkPin;         // output for the clock signal
-  byte csPin;          // output for selecting which device to write to
-  byte devices;        // number of devices
-  byte intensity;      // brightness of the display
-  DeviceInfo* matrix;  // stores the LED matrix buffers
-  byte* spiData;       // data buffer for writing to the SPI interface
+  byte pwrPin;             // pin used to supply power
+  byte dataPin;            // output where data is sent
+  byte clkPin;             // output for the clock signal
+  byte csPin;              // output for selecting which device to write to
+  byte devices;            // number of devices
+  byte intensity;          // brightness of the display
+  DeviceInfo* currMatrix;  // stores the LED matrix buffers for the current frame
+  DeviceInfo* prevMatrix;  // stores the LED matrix buffers for the previous frame
+  byte* busData;           // data buffer for writing to the data bus
 
-  inline byte spiDataSize() const {
+  inline byte busDataSize() const {
     return sizeof(byte) * devices * 2;
   }
 
-  inline byte spiOffset(const byte dev, const byte digit) {
+  inline byte busOffset(const byte dev, const byte digit) {
     return ((devices - 1) - dev) * 2 + digit;
   }
 
-  inline void clearSpiBuffer() {
-    memset(spiData, MX_NOOP, spiDataSize());
+  inline void clearBusBuffer() {
+    memset(busData, MX_NOOP, busDataSize());
   }
 
   void controlHardware(const byte dev, const byte mode, const int val) {
@@ -78,17 +78,17 @@ class MX7219 : public Control {
     }
 
     // put our device data into the buffer
-    spiData[spiOffset(dev, 0)] = opcode;
-    spiData[spiOffset(dev, 1)] = param;
+    busData[busOffset(dev, 0)] = opcode;
+    busData[busOffset(dev, 1)] = param;
   }
 
-  void spiSend() {
+  void busSend() {
     digitalWrite(csPin, LOW);
 
-    auto sz = spiDataSize();
+    auto sz = busDataSize();
 
     for (auto i = 0; i < sz; i++) {
-      shiftOut(dataPin, clkPin, MSBFIRST, spiData[i]);
+      shiftOut(dataPin, clkPin, MSBFIRST, busData[i]);
     }
 
     digitalWrite(csPin, HIGH);
@@ -97,21 +97,21 @@ class MX7219 : public Control {
   void flush() {
     for (auto i = 0; i < MX_ROW_SIZE; i++) {  // all data rows
       auto changed = false;                   // set to true if we detected a change
-      clearSpiBuffer();
+      clearBusBuffer();
 
       for (auto dev = 0; dev < devices; dev++) {  // all devices
-        if (bitRead(matrix[dev].changed, i)) {
+        if (currMatrix[dev].row[i] != prevMatrix[dev].row[i]) {
           //  put our device data into the buffer
-          spiData[spiOffset(dev, 0)] = MX_DIGIT0 + i;
-          spiData[spiOffset(dev, 1)] = matrix[dev].row[i];
+          busData[busOffset(dev, 0)] = MX_DIGIT0 + i;
+          busData[busOffset(dev, 1)] = currMatrix[dev].row[i];
           changed = true;
         }
       }
-      if (changed) spiSend();
+      if (changed) busSend();
     }
 
-    for (auto dev = 0; dev < devices; dev++)  // reset the device changed flag
-      matrix[dev].changed = 0;
+    for (byte dev = 0; dev < devices; dev++)
+      memcpy(&prevMatrix[dev], &currMatrix[dev], sizeof(currMatrix[dev]));
   }
 
  public:
@@ -124,10 +124,12 @@ class MX7219 : public Control {
     this->intensity = 0;
 
     // allocate memory needed for buffers anc clear them
-    this->matrix = new DeviceInfo[this->devices];
-    this->spiData = new byte[this->spiDataSize()];
+    this->currMatrix = new DeviceInfo[this->devices];
+    this->prevMatrix = new DeviceInfo[this->devices];
+    this->busData = new byte[this->busDataSize()];
     clear();
-    clearSpiBuffer();
+    clearBusBuffer();
+    memset(prevMatrix[this->devices].row, 0, sizeof(prevMatrix[this->devices].row));
 
     // set all pins to output
     pinMode(this->pwrPin, OUTPUT);
@@ -152,8 +154,7 @@ class MX7219 : public Control {
   }
 
   void clear(const byte dev) {
-    memset(matrix[dev].row, 0, sizeof(matrix[dev].row));
-    matrix[dev].changed = 0xff;
+    memset(currMatrix[dev].row, 0, sizeof(currMatrix[dev].row));
   }
 
   void clear() {
@@ -163,10 +164,10 @@ class MX7219 : public Control {
   }
 
   void control(const byte mode, const int val) {
-    clearSpiBuffer();
+    clearBusBuffer();
     for (auto dev = 0; dev < devices; dev++)
       controlHardware(dev, mode, val);
-    spiSend();
+    busSend();
   }
 
   void update() {
@@ -176,8 +177,7 @@ class MX7219 : public Control {
   void setRow(const byte dev, const byte row, const byte val) {
     assert(dev < devices);
     assert(row < MX_ROW_SIZE);
-    matrix[dev].row[row] = val;
-    bitSet(matrix[dev].changed, row);
+    currMatrix[dev].row[row] = val;
   }
 
   void setRow(const byte row, const byte val) {
@@ -191,11 +191,10 @@ class MX7219 : public Control {
     assert(col < MX_COL_SIZE);
     for (auto row = 0; row < MX_COL_SIZE; row++) {
       if (val & (1 << row)) {
-        bitSet(matrix[dev].row[row], col);
+        bitSet(currMatrix[dev].row[row], col);
       } else {
-        bitClear(matrix[dev].row[row], col);
+        bitClear(currMatrix[dev].row[row], col);
       }
-      bitSet(matrix[dev].changed, row);
     }
   }
 
@@ -210,11 +209,10 @@ class MX7219 : public Control {
     assert(row < MX_ROW_SIZE);
     assert(col < MX_COL_SIZE);
     if (lit) {
-      bitSet(matrix[dev].row[row], col);
+      bitSet(currMatrix[dev].row[row], col);
     } else {
-      bitClear(matrix[dev].row[row], col);
+      bitClear(currMatrix[dev].row[row], col);
     }
-    bitSet(matrix[dev].changed, row);
   }
 
   void setPoint(const byte row, const byte col, const bool lit) {
