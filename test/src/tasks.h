@@ -54,12 +54,12 @@ struct Coord {
 
 class DisplayTask : public MX7219Task {
   const unsigned long modeInterval = (unsigned long)7 * 1000 * 1000;
-  const byte modeCount = 9;
+  const byte modeCount = 10;
 
  private:
   Trigger trigger;
   Trigger modeTrigger;
-  byte mode = 0;
+  byte mode = 8;
   byte mxi = 0;
 
  public:
@@ -70,10 +70,10 @@ class DisplayTask : public MX7219Task {
 
   void run(const Time& time) final {
     if (!trigger.triggered(time)) return;
-    if (modeTrigger.triggered(time)) {
-      modeTrigger.reset(modeInterval);
-      incMode();
-    }
+    // if (modeTrigger.triggered(time)) {
+    //   modeTrigger.reset(modeInterval);
+    //   incMode();
+    // }
     if (!this->isEnabled()) goto RESET;
 
     switch (mode) {
@@ -99,9 +99,12 @@ class DisplayTask : public MX7219Task {
         demoWorms();
         break;
       case 8:
-        demoSineWave();
+        demoSawtooth();
         break;
       case 9:
+        demoSineWave();
+        break;
+      case 10:
         demoFont();
         break;
       default:
@@ -312,6 +315,70 @@ class DisplayTask : public MX7219Task {
 
       for (auto j = 0; j < worms[i].size; j++) {
         setPointXY(worms[i].coord[j].x, worms[i].coord[j].y, true);
+      }
+    }
+  }
+
+  void demoSawtooth() {
+    static byte prevLine = 0;
+    static bool prevUpDir = true;
+    /*static byte slowdownCount = 255;
+
+    if (slowdownCount > 3) {
+      slowdownCount = 0;
+    } else {
+      slowdownCount++;
+      return;
+    }*/
+
+    byte line = prevLine;
+    bool upDir = prevUpDir;
+    if (upDir) {
+      if (line < 7) {
+        line++;
+      } else {
+        line--;
+        upDir = false;
+      }
+    } else {
+      if (line > 0) {
+        line--;
+      } else {
+        line++;
+        upDir = true;
+      }
+    }
+    print("prevLine: ");
+    print(prevLine);
+    print(" line: ");
+    println(line);
+    prevLine = line;
+    prevUpDir = upDir;
+
+    byte lineCount = 0;
+    clear();
+
+    for (auto x = 0; x < 32; x++) {
+      setPointXY(x, line, true);
+      lineCount++;
+
+      if (lineCount == 2) {
+        lineCount = 0;
+        if (upDir) {
+          if (line < 7) {
+            line++;
+          } else {
+            line--;
+            upDir = false;
+          }
+        } else {
+          if (line > 0) {
+            line--;
+          } else {
+            line++;
+            upDir = true;
+          }
+        }
       }
     }
   }
