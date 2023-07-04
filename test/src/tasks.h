@@ -59,7 +59,7 @@ class DisplayTask : public MX7219Task {
  private:
   Trigger trigger;
   Trigger modeTrigger;
-  byte mode = 8;
+  byte mode = 0;
   byte mxi = 0;
 
  public:
@@ -70,10 +70,10 @@ class DisplayTask : public MX7219Task {
 
   void run(const Time& time) final {
     if (!trigger.triggered(time)) return;
-    // if (modeTrigger.triggered(time)) {
-    //   modeTrigger.reset(modeInterval);
-    //   incMode();
-    // }
+    if (modeTrigger.triggered(time)) {
+      modeTrigger.reset(modeInterval);
+      incMode();
+    }
     if (!this->isEnabled()) goto RESET;
 
     switch (mode) {
@@ -322,14 +322,6 @@ class DisplayTask : public MX7219Task {
   void demoSawtooth() {
     static byte prevLine = 0;
     static bool prevUpDir = true;
-    /*static byte slowdownCount = 255;
-
-    if (slowdownCount > 3) {
-      slowdownCount = 0;
-    } else {
-      slowdownCount++;
-      return;
-    }*/
 
     byte line = prevLine;
     bool upDir = prevUpDir;
@@ -348,10 +340,6 @@ class DisplayTask : public MX7219Task {
         upDir = true;
       }
     }
-    print("prevLine: ");
-    print(prevLine);
-    print(" line: ");
-    println(line);
     prevLine = line;
     prevUpDir = upDir;
 
