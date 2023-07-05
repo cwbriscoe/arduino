@@ -59,7 +59,7 @@ inline void __assert(const char *__func, const char *__file, int __lineno, const
   abort();
 }
 #else
-void assert(bool) {}  // NOOP for non-debug compile
+void assert(bool)((void)0)  // NOOP for non-debug compile
 #endif
 
 #endif

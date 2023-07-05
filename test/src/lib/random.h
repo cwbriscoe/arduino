@@ -26,7 +26,7 @@ unsigned long init() {
   }
 
   raw.seed += prime;
-  unsigned long result;
+  unsigned long result = 0;
   for (byte i = 0; i < 8; i++) {
     for (byte j = 0; j < 4; j++) {
       auto val = analogRead(j);

@@ -43,9 +43,9 @@ class Dial : public Control {
 
 class DialTask : public Dial, public Task {
  public:
-  DialTask(const byte pin, const byte res = ANALOG_MAX_BITS) : Dial(pin, res) {}
+  explicit DialTask(const byte pin, const byte res = ANALOG_MAX_BITS) : Dial(pin, res) {}
 
-  void run(const Time&) {
+  void run(const Time&) override {
     update();
   }
 };

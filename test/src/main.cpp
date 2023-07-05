@@ -4,12 +4,12 @@
 
 Manager* manager;
 
-void setup() {
+void setup() {  // cppcheck-suppress unusedFunction
   enableDebuggingSerialPort();
   manager = new Manager();
   manager->init();
 }
 
-void loop() {
+void loop() {  // cppcheck-suppress unusedFunction
   manager->run();
 }

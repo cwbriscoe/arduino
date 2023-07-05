@@ -157,6 +157,17 @@ class MX7219 : public Control {
     setIntensity(0);  // default to lowest brightness
   }
 
+  ~MX7219() {
+    delete this->currMatrix;
+    delete this->prevMatrix;
+    delete this->rowCounts;
+    delete this->busData;
+  }
+
+  // forbid copies
+  MX7219(const MX7219&) = delete;
+  MX7219& operator=(const MX7219&) = delete;
+
   void setIntensity(const byte intensity) {
     this->intensity = intensity;
     control(MX_INTENSITY, this->intensity);
@@ -255,7 +266,7 @@ class MX7219 : public Control {
 
 class MX7219Task : public MX7219, public Task {
  public:
-  MX7219Task(const byte pwrPin, const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1)
+  explicit MX7219Task(const byte pwrPin, const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1)
       : MX7219(pwrPin, dataPin, clkPin, csPin, devices) {}
 };
 }  // namespace SysLib

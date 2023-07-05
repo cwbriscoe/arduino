@@ -44,9 +44,9 @@ class Button : public Control {
 
 class ButtonTask : public Button, public Task {
  public:
-  ButtonTask(const byte pin) : Button(pin) {}
+  explicit ButtonTask(const byte pin) : Button(pin) {}
 
-  void run(const Time&) {
+  void run(const Time&) override {
     update();
   }
 };
