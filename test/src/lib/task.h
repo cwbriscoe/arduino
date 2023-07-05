@@ -29,7 +29,7 @@ class Task {
   virtual void run(const Time&) {}
 
 #ifdef DEBUG
-  unsigned long getRunTime() {
+  unsigned long getRunTime() const {
     return this->runTime;
   }
 

@@ -32,10 +32,10 @@ class Button : public Control {
     }
   }
 
-  inline bool value() { return currState; }
+  inline bool value() const { return currState; }
 
-  inline bool isOn() { return currState == HIGH; }
-  inline bool isOff() { return currState == LOW; }
+  inline bool isOn() const { return currState == HIGH; }
+  inline bool isOff() const { return currState == LOW; }
 
   inline void addOnBtnDownCB(void (*cb)()) { onBtnDownCB = cb; }
   inline void addOnBtnUpCB(void (*cb)()) { onBtnUpCB = cb; }

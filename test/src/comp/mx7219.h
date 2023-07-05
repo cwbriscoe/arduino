@@ -40,15 +40,15 @@ class MX7219 : public Control {
     return sizeof(byte) * devices * 2;
   }
 
-  inline byte busOffset(const byte dev, const byte digit) {
+  inline byte busOffset(const byte dev, const byte digit) const {
     return ((devices - 1) - dev) * 2 + digit;
   }
 
-  inline void clearBusBuffer() {
+  inline void clearBusBuffer() const {
     memset(busData, MX_NOOP, busDataSize());
   }
 
-  void controlHardware(const byte dev, const byte mode, const int val) {
+  void controlHardware(const byte dev, const byte mode, const int val) const {
     byte opcode = MX_NOOP;
     byte param = 0;
 
@@ -83,7 +83,7 @@ class MX7219 : public Control {
     busData[busOffset(dev, 1)] = param;
   }
 
-  void busSend() {
+  void busSend() const {
     digitalWrite(csPin, LOW);
 
     auto sz = busDataSize();
@@ -95,7 +95,7 @@ class MX7219 : public Control {
     digitalWrite(csPin, HIGH);
   }
 
-  void flush() {
+  void flush() const {
     memset(rowCounts, 0, sizeof(byte) * devices);
 
     bool changed;
@@ -161,11 +161,11 @@ class MX7219 : public Control {
     control(MX_INTENSITY, this->intensity);
   }
 
-  void clear(const byte dev) {
+  void clear(const byte dev) const {
     memset(currMatrix[dev].row, 0, sizeof(currMatrix[dev].row));
   }
 
-  void clear() {
+  void clear() const {
     for (byte dev = 0; dev < devices; dev++) {
       clear(dev);
     }
@@ -178,23 +178,23 @@ class MX7219 : public Control {
     busSend();
   }
 
-  void update() {
+  void update() const {
     flush();
   }
 
-  void setRow(const byte dev, const byte row, const byte val) {
+  void setRow(const byte dev, const byte row, const byte val) const {
     assert(dev < devices);
     assert(row < MX_ROW_SIZE);
     currMatrix[dev].row[row] = val;
   }
 
-  void setRow(const byte row, const byte val) {
+  void setRow(const byte row, const byte val) const {
     for (byte dev = 0; dev < devices; dev++) {
       setRow(dev, row, val);
     }
   }
 
-  void setCol(const byte dev, const byte col, const byte val) {
+  void setCol(const byte dev, const byte col, const byte val) const {
     assert(dev < devices);
     assert(col < MX_COL_SIZE);
     for (auto row = 0; row < MX_COL_SIZE; row++) {
@@ -206,13 +206,13 @@ class MX7219 : public Control {
     }
   }
 
-  void setCol(const byte col, const byte val) {
+  void setCol(const byte col, const byte val) const {
     for (byte dev = 0; dev < devices; dev++) {
       setCol(dev, col, val);
     }
   }
 
-  void setPoint(const byte dev, const byte row, const byte col, const bool lit) {
+  void setPoint(const byte dev, const byte row, const byte col, const bool lit) const {
     assert(dev < devices);
     assert(row < MX_ROW_SIZE);
     assert(col < MX_COL_SIZE);
@@ -223,31 +223,31 @@ class MX7219 : public Control {
     }
   }
 
-  void setPoint(const byte row, const byte col, const bool lit) {
+  void setPoint(const byte row, const byte col, const bool lit) const {
     for (byte dev = 0; dev < devices; dev++) {
       setPoint(dev, row, col, lit);
     }
   }
 
-  void setPointXY(const byte x, const byte y, const bool lit) {
+  void setPointXY(const byte x, const byte y, const bool lit) const {
     byte dev = (devices - 1) - (x >> 3);
     setPoint(dev, 7 - y, 7 - (x & 7), lit);
   }
 
-  byte getChar(const char chr) {
+  byte getChar(const char chr) const {
     if (chr < 32) { return 0; }
     if (chr > 122) { return 0; }
     return chr - 32;
   }
 
-  void setDigit(const byte dev, const byte digit) {
+  void setDigit(const byte dev, const byte digit) const {
     for (auto i = 0; i < 7; i++) {
       auto bits = pgm_read_byte(&font[digit][i]);
       setRow(dev, i, bits);
     }
   }
 
-  void setChar(const byte dev, const char chr) {
+  void setChar(const byte dev, const char chr) const {
     setDigit(dev, getChar(chr));
   }
 };

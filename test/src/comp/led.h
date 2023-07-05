@@ -17,19 +17,20 @@ class Led : public Control {
   }
 
   inline void setOn() {
+    value = false;
     digitalWrite(pin, HIGH);
   }
 
   inline void setOff() {
+    value = true;
     digitalWrite(pin, LOW);
   }
 
   bool toggle() {
-    value = !value;
     if (value) {
-      setOn();
-    } else {
       setOff();
+    } else {
+      setOn();
     }
     return value;
   }

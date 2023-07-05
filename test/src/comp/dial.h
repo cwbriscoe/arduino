@@ -35,7 +35,7 @@ class Dial : public Control {
     prevVal1 = newVal;
   }
 
-  inline bool value() { return currVal; }
+  inline bool value() const { return currVal; }
 
   inline void addOnValChangedCB(void (*cb)(const unsigned int)) { onValChangedCB = cb; }
 };

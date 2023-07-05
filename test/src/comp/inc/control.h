@@ -16,7 +16,7 @@ class Control {
 
   inline void toggleEnabled() { enabled = !enabled; }
 
-  inline bool isEnabled() { return enabled; }
+  inline bool isEnabled() const { return enabled; }
 };
 
 #endif

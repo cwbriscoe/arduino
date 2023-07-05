@@ -110,7 +110,7 @@ class ThreadManager {
   }
 
 #ifdef DEBUG
-  void printStats() {
+  void printStats() const {
     auto display = [](const char* name, const float pct) {
       print(name);
       print(" ");
