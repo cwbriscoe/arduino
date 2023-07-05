@@ -2,14 +2,13 @@
 
 #include "manager.h"
 
-Manager* manager;
+Manager manager;
 
 void setup() {  // cppcheck-suppress unusedFunction
-  enableDebuggingSerialPort();
-  manager = new Manager();
-  manager->init();
+  SysLib::enableDebuggingSerialPort();
+  manager.init();
 }
 
 void loop() {  // cppcheck-suppress unusedFunction
-  manager->run();
+  manager.run();
 }

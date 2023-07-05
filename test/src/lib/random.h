@@ -7,8 +7,8 @@
 
 #include "debug.h"
 
-namespace Random {
-unsigned long init() {
+namespace SysLib {
+unsigned long initRandomSeed() {
   const unsigned long prime = 181081;
   unsigned int seedAddress = 0;
 
@@ -46,6 +46,6 @@ unsigned long init() {
 
   return raw.seed;
 }
-}  // namespace Random
+}  // namespace SysLib
 
 #endif

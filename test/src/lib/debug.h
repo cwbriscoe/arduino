@@ -7,6 +7,7 @@
 
 #include "env.h"
 
+namespace SysLib {
 // cause time to overflow faster in debug mode to catch errors more quickly
 // this will cause it to overflow about every 16 seconds
 #ifdef DEBUG
@@ -25,13 +26,13 @@ unsigned long miniMicros() {
 // function to enable serial port when debugging only
 #ifdef DEBUG
 void enableDebuggingSerialPort() {
-  Serial.begin(SERIAL_BAUD_RATE);
-  while (!Serial) {}  // delay a bit in debug mode so serial output isn't garbled on first Serial.print()
-  delay(100);
+  Serial.begin(SRL_BAUD_RATE);
+  delay(SRL_INIT_DELAY);  // short delay so first outputs are not garbled
 }
 #else
 void enableDebuggingSerialPort() {}
 #endif
+}  // namespace SysLib
 
 // setup debug prints to be NOOP's without debug mode set
 #ifdef DEBUG
@@ -59,7 +60,7 @@ inline void __assert(const char *__func, const char *__file, int __lineno, const
   abort();
 }
 #else
-void assert(bool)((void)0)  // NOOP for non-debug compile
+void assert(bool) {}  // NOOP for non-debug compile
 #endif
 
 #endif

@@ -54,7 +54,7 @@ class Manager {
 
     // comment out Random for deterministic random numbers
     print(F("setup complete : seed = "));
-    println(Random::init());
+    println(SysLib::initRandomSeed());
   }
 
   static void onPwrBtnDown() {
