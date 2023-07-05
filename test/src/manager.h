@@ -3,6 +3,7 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
+#include "lib/random.h"
 #include "lib/thread.h"
 #include "tasks.h"
 
@@ -51,7 +52,9 @@ class Manager {
     mode2BtnTask.addOnBtnDownCB(onMode2BtnDown);
     dialTask.addOnValChangedCB(onDialChanged);
 
-    println(F("setup complete"));
+    // comment out Random for deterministic random numbers
+    print(F("setup complete : seed = "));
+    println(Random::init());
   }
 
   static void onPwrBtnDown() {
