@@ -5,6 +5,7 @@
 
 #include "inc/control.h"
 
+namespace SysLib {
 class Dial : public Control {
  private:
   byte pin = 0;
@@ -48,5 +49,6 @@ class DialTask : public Dial, public Task {
     update();
   }
 };
+}  // namespace SysLib
 
 #endif

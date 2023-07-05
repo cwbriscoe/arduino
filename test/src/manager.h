@@ -17,13 +17,13 @@ class Manager {
   const byte dialPin = A3;
 
  private:
-  ThreadManager threads;  // pointer to our thread manager
+  SysLib::ThreadManager threads;  // pointer to our thread manager
 
   // task declarations
-  ButtonTask pwrBtnTask;
-  ButtonTask mode1BtnTask;
-  ButtonTask mode2BtnTask;
-  DialTask dialTask;
+  SysLib::ButtonTask pwrBtnTask;
+  SysLib::ButtonTask mode1BtnTask;
+  SysLib::ButtonTask mode2BtnTask;
+  SysLib::DialTask dialTask;
   DisplayTask displayTask;
   LedBlinkTask ledBlinkTask;
   TaskCount taskCount;

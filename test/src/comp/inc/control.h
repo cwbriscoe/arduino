@@ -5,6 +5,7 @@
 
 #include "env.h"
 
+namespace SysLib {
 class Control {
  private:
   bool enabled = true;
@@ -18,5 +19,6 @@ class Control {
 
   inline bool isEnabled() const { return enabled; }
 };
+}  // namespace SysLib
 
 #endif

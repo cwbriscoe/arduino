@@ -5,6 +5,7 @@
 
 #include "inc/control.h"
 
+namespace SysLib {
 class Button : public Control {
  private:
   byte pin = 0;
@@ -49,5 +50,6 @@ class ButtonTask : public Button, public Task {
     update();
   }
 };
+}  // namespace SysLib
 
 #endif

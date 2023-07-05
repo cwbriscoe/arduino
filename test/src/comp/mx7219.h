@@ -19,6 +19,7 @@
 #define MX_ROW_SIZE 8
 #define MX_COL_SIZE 8
 
+namespace SysLib {
 class MX7219 : public Control {
  private:
   struct DeviceInfo {
@@ -257,5 +258,6 @@ class MX7219Task : public MX7219, public Task {
   MX7219Task(const byte pwrPin, const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1)
       : MX7219(pwrPin, dataPin, clkPin, csPin, devices) {}
 };
+}  // namespace SysLib
 
 #endif

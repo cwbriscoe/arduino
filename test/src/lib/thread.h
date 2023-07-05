@@ -6,6 +6,7 @@
 #include "env.h"
 #include "task.h"
 
+namespace SysLib {
 struct threadEntry {
   Trigger* trig;  // keep track of when a thread should execute
   Task* task;     // pointer to the task
@@ -135,5 +136,6 @@ class ThreadManager {
   }
 #endif
 };
+}  // namespace SysLib
 
 #endif

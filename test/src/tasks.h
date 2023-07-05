@@ -10,11 +10,11 @@
 /*****************************************************************************/
 /* Blink Task                                                                */
 /*****************************************************************************/
-class LedBlinkTask : public LedTask {
+class LedBlinkTask : public SysLib::LedTask {
  public:
   LedBlinkTask() : LedTask(LED_BUILTIN) {}
 
-  void run(const Time&) final {
+  void run(const SysLib::Time&) final {
     toggle();
   }
 };
@@ -22,15 +22,15 @@ class LedBlinkTask : public LedTask {
 /*****************************************************************************/
 /* Count Task                                                                */
 /*****************************************************************************/
-class TaskCount : public Task {
+class TaskCount : public SysLib::Task {
  private:
-  Trigger trigger;
+  SysLib::Trigger trigger;
 
  public:
   TaskCount()
       : trigger((unsigned long)1000 * 1000, true) {}
 
-  void run(const Time& time) final {
+  void run(const SysLib::Time& time) final {
     if (trigger.triggered(time)) {
       print(F("taskCount time: "));
       println(time.microseconds());
@@ -52,13 +52,13 @@ struct Coord {
   byte y;
 };
 
-class DisplayTask : public MX7219Task {
+class DisplayTask : public SysLib::MX7219Task {
   const unsigned long modeInterval = (unsigned long)7 * 1000 * 1000;
   const byte modeCount = 10;
 
  private:
-  Trigger trigger;
-  Trigger modeTrigger;
+  SysLib::Trigger trigger;
+  SysLib::Trigger modeTrigger;
   byte mode = 0;
   byte mxi = 0;
 
@@ -68,7 +68,7 @@ class DisplayTask : public MX7219Task {
                   modeTrigger(0, true, false) {
   }
 
-  void run(const Time& time) final {
+  void run(const SysLib::Time& time) final {
     if (!trigger.triggered(time)) return;
     if (modeTrigger.triggered(time)) {
       modeTrigger.reset(modeInterval);

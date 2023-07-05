@@ -5,6 +5,7 @@
 
 #include "inc/control.h"
 
+namespace SysLib {
 class Led : public Control {
  private:
   byte pin = 0;
@@ -40,5 +41,6 @@ class LedTask : public Led, public Task {
  public:
   LedTask(const byte pin) : Led(pin) {}
 };
+}  // namespace SysLib
 
 #endif

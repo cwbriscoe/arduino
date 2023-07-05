@@ -25,7 +25,7 @@ unsigned long miniMicros() {
 // function to enable serial port when debugging only
 #ifdef DEBUG
 void enableDebuggingSerialPort() {
-  Serial.begin(115200);
+  Serial.begin(SERIAL_BAUD_RATE);
   while (!Serial) {}  // delay a bit in debug mode so serial output isn't garbled on first Serial.print()
   delay(100);
 }

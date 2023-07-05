@@ -5,6 +5,7 @@
 
 #include "time.h"
 
+namespace SysLib {
 class Task {
  private:
 #ifdef DEBUG
@@ -38,5 +39,6 @@ class Task {
   }
 #endif
 };
+}  // namespace SysLib
 
 #endif

@@ -5,6 +5,7 @@
 
 #include "debug.h"
 
+namespace SysLib {
 class Time {
  private:
   unsigned long time = 0;  // time in microseconds
@@ -129,5 +130,6 @@ void wait(const unsigned long microseconds) {
   delay(milliseconds);
   delayMicroseconds(microseconds - (milliseconds * 1000));
 }
+}  // namespace SysLib
 
 #endif
