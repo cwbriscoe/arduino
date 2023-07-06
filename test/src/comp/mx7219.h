@@ -6,6 +6,7 @@
 #include "inc/control.h"
 #include "inc/font.h"
 
+namespace SysLib {
 // control registers (1-8 = digits 0-7)
 #define MX_NOOP 0
 #define MX_DIGIT0 1
@@ -19,7 +20,6 @@
 #define MX_ROW_SIZE 8
 #define MX_COL_SIZE 8
 
-namespace SysLib {
 class MX7219 : public Control {
   friend class Texter;
 

@@ -2,7 +2,7 @@
 
 #include "manager.h"
 
-Manager manager;
+App::Manager manager;
 
 void setup() {  // cppcheck-suppress unusedFunction
   SysLib::enableDebuggingSerialPort();

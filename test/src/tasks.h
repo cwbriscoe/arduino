@@ -7,6 +7,7 @@
 #include "lib/debug.h"
 #include "lib/task.h"
 
+namespace App {
 /*****************************************************************************/
 /* Blink Task                                                                */
 /*****************************************************************************/
@@ -430,5 +431,6 @@ class DisplayTask : public SysLib::MX7219Task {
     texter->write();
   }
 };
+}  // namespace App
 
 #endif

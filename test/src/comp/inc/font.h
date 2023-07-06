@@ -5,6 +5,7 @@
 
 #include "env.h"
 
+namespace SysLib {
 // since max width of the font is 5, we could reduce the size of memory by
 // doing some bit shifting magic on the encoding and decoding
 // bytes 1-7 are the font, byte 8 is the character width
@@ -531,5 +532,6 @@ const byte font[65][8] PROGMEM = {
     0b00000000,
     2,
 };
+}  // namespace SysLib
 
 #endif

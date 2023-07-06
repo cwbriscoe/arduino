@@ -7,6 +7,7 @@
 #include "lib/thread.h"
 #include "tasks.h"
 
+namespace App {
 class Manager;
 static Manager* self;  // pointer to Manager instance to be used in static fuction callbacks
 
@@ -89,5 +90,6 @@ class Manager {
     while (true) { threads.run(); }
   }
 };
+}  // namespace App
 
 #endif
