@@ -33,7 +33,7 @@ class Sensor : public Control {
     // place it in the history index
     valHist[currIdx] = newVal;
     currIdx++;
-    if (currIdx = 10) currIdx = 0;
+    if (currIdx == 10) currIdx = 0;
 
     // find the average value over history, tossing out the highest and lowest value
     int hi = 0, lo = 1 << ANALOG_MAX_BITS, total = 0;
