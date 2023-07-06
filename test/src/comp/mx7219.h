@@ -276,11 +276,11 @@ class Texter {
   const char* text = nullptr;
 
  public:
-  Texter(MX7219* display) {
+  Texter(MX7219* const display) {
     this->display = display;
   }
 
-  Texter(MX7219* display, const char* text) : Texter(display) {
+  Texter(MX7219* const display, const char* text) : Texter(display) {
     setText(text);
   }
 
