@@ -3,7 +3,7 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
-#include "env.h"
+#include "lib/debug.h"
 
 namespace SysLib {
 class Control {

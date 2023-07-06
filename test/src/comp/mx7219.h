@@ -21,6 +21,8 @@
 
 namespace SysLib {
 class MX7219 : public Control {
+  friend class Texter;
+
  private:
   struct DeviceInfo {
     byte row[MX_ROW_SIZE];  // data for each row 0=OFF 1=ON
@@ -248,6 +250,7 @@ class MX7219 : public Control {
 
   byte getChar(const char chr) const {
     if (chr < 32) { return 0; }
+    if (chr > 96 && chr < 123) return chr - 64;
     if (chr > 122) { return 0; }
     return chr - 32;
   }
@@ -259,12 +262,45 @@ class MX7219 : public Control {
     }
   }
 
+  void setDigitXY(const byte x, const byte y, const byte digit, const byte offset = 0) const {
+  }
+
   void setChar(const byte dev, const char chr) const {
     setDigit(dev, getChar(chr));
   }
 };
 
-class MX7219Task : public MX7219, public Task {
+class Texter {
+ private:
+  MX7219* display = nullptr;
+  const char* text = nullptr;
+
+ public:
+  Texter(MX7219* display) {
+    this->display = display;
+  }
+
+  Texter(MX7219* display, const char* text) : Texter(display) {
+    setText(text);
+  }
+
+  void setText(const char* text) {
+    this->text = text;
+  }
+
+  void write() const {
+    assert(text);
+    auto p = text;
+    while (*p != '\0') {
+      auto chr = display->getChar(*p);
+      println(chr);
+      p++;
+    }
+  }
+};
+
+class MX7219Task : public MX7219,
+                   public Task {
  public:
   explicit MX7219Task(const byte pwrPin, const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1)
       : MX7219(pwrPin, dataPin, clkPin, csPin, devices) {}

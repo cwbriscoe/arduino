@@ -3,9 +3,9 @@
 #ifndef COMPONENTS_H
 #define COMPONENTS_H
 
-#include "../button.h"
-#include "../dial.h"
-#include "../led.h"
-#include "../mx7219.h"
+#include "comp/button.h"
+#include "comp/dial.h"
+#include "comp/led.h"
+#include "comp/mx7219.h"
 
 #endif

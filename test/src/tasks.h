@@ -107,6 +107,9 @@ class DisplayTask : public SysLib::MX7219Task {
       case 10:
         demoFont();
         break;
+      case 11:
+        demoTexter();
+        break;
       default:
         clear();
         break;
@@ -420,6 +423,11 @@ class DisplayTask : public SysLib::MX7219Task {
     idx++;
     if (idx == maxDigits) idx = 0;
     setDigit(0, idx);
+  }
+
+  void demoTexter() {
+    static auto texter = new SysLib::Texter(this, "Chris");
+    texter->write();
   }
 };
 
