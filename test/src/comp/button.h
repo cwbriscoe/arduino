@@ -20,7 +20,7 @@ class Button : public Control {
     pinMode(this->pin, INPUT);
   }
 
-  inline void update() {
+  void update() {
     currState = (digitalRead(pin) == HIGH);
     if (currState != prevState) {
       prevState = currState;

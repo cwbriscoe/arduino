@@ -7,8 +7,6 @@
 
 namespace SysLib {
 class Dial : public Sensor {
- private:
-
  public:
   explicit Dial(const byte pin, const byte res = ANALOG_MAX_BITS) : Sensor(pin, res) {}
 };

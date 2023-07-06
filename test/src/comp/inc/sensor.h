@@ -26,7 +26,7 @@ class Sensor : public Control {
     pinMode(this->pin, INPUT);
   }
 
-  inline void update() {
+  void update() {
     // get new reading
     auto newVal = analogRead(pin) >> (ANALOG_MAX_BITS - res);
 

@@ -75,7 +75,7 @@ class DisplayTask : public SysLib::MX7219Task {
       modeTrigger.reset(modeInterval);
       incMode();
     }
-    if (!this->isEnabled()) goto RESET;
+    if (this->isDisabled()) goto RESET;
 
     switch (mode) {
       case 1:

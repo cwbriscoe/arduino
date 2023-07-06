@@ -13,11 +13,18 @@ class Control {
  public:
   Control() {}
 
-  inline void setEnabled(const bool enabled) { this->enabled = enabled; }
+  virtual void update() {}
 
-  inline void toggleEnabled() { enabled = !enabled; }
+  inline void setEnabled() { enabled = true; }
+  inline void setDisabled() { enabled = false; }
+
+  inline bool toggleEnabled() {
+    enabled = !enabled;
+    return enabled;
+  }
 
   inline bool isEnabled() const { return enabled; }
+  inline bool isDisabled() const { return !enabled; }
 };
 }  // namespace SysLib
 

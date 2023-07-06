@@ -9,7 +9,6 @@ namespace SysLib {
 class Led : public Control {
  private:
   byte pin = 0;
-  bool value = false;
 
  public:
   explicit Led(const byte pin) {
@@ -18,22 +17,21 @@ class Led : public Control {
   }
 
   inline void setOn() {
-    value = false;
     digitalWrite(pin, HIGH);
   }
 
   inline void setOff() {
-    value = true;
     digitalWrite(pin, LOW);
   }
 
   bool toggle() {
-    if (value) {
-      setOff();
-    } else {
+    auto val = toggleEnabled();
+    if (val) {
       setOn();
+    } else {
+      setOff();
     }
-    return value;
+    return val;
   }
 };
 

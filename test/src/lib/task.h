@@ -15,6 +15,8 @@ class Task {
  public:
   Task() {}
 
+  virtual void run(const Time&) {}
+
   void exec(const Time& time) {
 #ifdef DEBUG
     auto start = micros();
@@ -26,8 +28,6 @@ class Task {
     this->runTime += micros() - start;
 #endif
   }
-
-  virtual void run(const Time&) {}
 
 #ifdef DEBUG
   unsigned long getRunTime() const {
