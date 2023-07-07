@@ -53,7 +53,7 @@ class Sensor : public Control {
     prevVal = currVal;
   }
 
-  inline bool value() const { return currVal; }
+  inline unsigned int value() const { return currVal; }
 
   inline void addOnValChangedCB(void (*cb)(const unsigned int)) { onValChangedCB = cb; }
 };

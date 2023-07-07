@@ -21,6 +21,24 @@ class LedBlinkTask : public SysLib::LedTask {
 };
 
 /*****************************************************************************/
+/* TMP36 Read Task                                                           */
+/*****************************************************************************/
+class TMP36ReadTask : public SysLib::TMP36Task {
+ public:
+  unsigned int prevVal = 9999;
+  TMP36ReadTask(const byte pin) : TMP36Task(pin) {}
+
+  void run(const SysLib::Time& time) final {
+    SensorTask::run(time);
+    auto val = value();
+    if (val != prevVal) {
+      prevVal = val;
+      println(val);
+    }
+  }
+};
+
+/*****************************************************************************/
 /* Count Task                                                                */
 /*****************************************************************************/
 class TaskCount : public SysLib::Task {

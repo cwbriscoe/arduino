@@ -7,5 +7,6 @@
 #include "comp/dial.h"
 #include "comp/led.h"
 #include "comp/mx7219.h"
+#include "comp/tmp36.h"
 
 #endif

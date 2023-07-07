@@ -12,6 +12,7 @@ const char pwrbtnNm[] PROGMEM = "pwrbtn";
 const char md1btnNm[] PROGMEM = "md1btn";
 const char md2btnNm[] PROGMEM = "md2btn";
 const char dialNm[] PROGMEM = "dial";
+const char tmp36Nm[] PROGMEM = "tmp36";
 const char max7219Nm[] PROGMEM = "max7219";
 const char blinkNm[] PROGMEM = "blink";
 #ifdef DEBUG
@@ -26,6 +27,7 @@ class Manager {
   const byte mode1BtnPin = 9;
   const byte mode2BtnPin = 10;
   const byte dialPin = A3;
+  const byte tmp36Pin = A2;
 
  private:
   SysLib::ThreadManager threads;  // pointer to our thread manager
@@ -36,20 +38,22 @@ class Manager {
   SysLib::ButtonTask mode2BtnTask;
   SysLib::DialTask dialTask;
   DisplayTask displayTask;
+  TMP36ReadTask tmp36ReadTask;
   LedBlinkTask ledBlinkTask;
   TaskCount taskCount;
 
  public:
-  Manager() : pwrBtnTask(pwrBtnPin), mode1BtnTask(mode1BtnPin), mode2BtnTask(mode2BtnPin), dialTask(dialPin, 4) {
+  Manager() : pwrBtnTask(pwrBtnPin), mode1BtnTask(mode1BtnPin), mode2BtnTask(mode2BtnPin), dialTask(dialPin, 4), tmp36ReadTask(tmp36Pin) {
     self = this;
   }
 
   void init() {
     // add tasks to the thread manager
-    threads.add(pwrbtnNm, 7, (unsigned long)25 * 1000, &pwrBtnTask);
-    threads.add(md1btnNm, 7, (unsigned long)25 * 1000, &mode1BtnTask);
-    threads.add(md2btnNm, 7, (unsigned long)25 * 1000, &mode2BtnTask);
+    threads.add(pwrbtnNm, 6, (unsigned long)25 * 1000, &pwrBtnTask);
+    threads.add(md1btnNm, 6, (unsigned long)25 * 1000, &mode1BtnTask);
+    threads.add(md2btnNm, 6, (unsigned long)25 * 1000, &mode2BtnTask);
     threads.add(dialNm, 7, (unsigned long)25 * 1000, &dialTask);
+    threads.add(tmp36Nm, 7, (unsigned long)25 * 1000, &tmp36ReadTask);
     threads.add(max7219Nm, 8, (unsigned long)40 * 1000, &displayTask);
     threads.add(blinkNm, 8, (unsigned long)500 * 1000, &ledBlinkTask);
 #ifdef DEBUG
