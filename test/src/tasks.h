@@ -32,8 +32,11 @@ class TMP36ReadTask : public SysLib::TMP36Task {
     SensorTask::run(time);
     auto val = value();
     if (val != prevVal) {
+      float volts = val * 5.0f /1024.0f;
+      auto tempC = (volts - 0.5f) *100;
+      auto tempF = (tempC * 9) / 5 +32;
       prevVal = val;
-      println(val);
+      println(tempF);
     }
   }
 };
