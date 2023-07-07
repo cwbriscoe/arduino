@@ -12,9 +12,10 @@ class Sensor : public Control {
  private:
   byte pin = 0;
   byte res = 0;
-  int currVal = 0;
-  int prevVal = 0;
-  int valHist[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  word currVal = 0;
+  word prevVal = 0;
+  word prevReading = 0;
+  word valHist[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   byte currIdx = 0;
   void (*onValChangedCB)(const unsigned int) = nullptr;
 
@@ -28,7 +29,11 @@ class Sensor : public Control {
 
   void update() {
     // get new reading
-    auto newVal = analogRead(pin) >> (ANALOG_MAX_BITS - res);
+    word newVal = analogRead(pin) >> (ANALOG_MAX_BITS - res);
+    if (newVal != prevReading) {
+      prevReading = newVal;
+      return;
+    }
 
     // place it in the history index
     valHist[currIdx] = newVal;
@@ -36,7 +41,7 @@ class Sensor : public Control {
     if (currIdx == 10) currIdx = 0;
 
     // find the average value over history, tossing out the highest and lowest value
-    int hi = 0, lo = 1 << ANALOG_MAX_BITS, total = 0;
+    word hi = 0, lo = 1 << ANALOG_MAX_BITS, total = 0;
     for (byte i = 0; i < 10; i++) {
       if (valHist[i] > hi) hi = valHist[i];
       if (valHist[i] < lo) lo = valHist[i];
@@ -44,13 +49,14 @@ class Sensor : public Control {
     }
     total -= hi;
     total -= lo;
-    currVal = total / 8;
+    currVal = (float(total) / 8.0f) + 0.5f; // round to the nearest integer value
 
     // call the callback if the computed value is different than previously calculated
     if (currVal != prevVal) {
       if (onValChangedCB) onValChangedCB(currVal);
     }
     prevVal = currVal;
+    //if (res == ANALOG_MAX_BITS) println(currVal);
   }
 
   inline unsigned int value() const { return currVal; }

@@ -53,7 +53,7 @@ class Manager {
     threads.add(md1btnNm, 6, (unsigned long)25 * 1000, &mode1BtnTask);
     threads.add(md2btnNm, 6, (unsigned long)25 * 1000, &mode2BtnTask);
     threads.add(dialNm, 7, (unsigned long)25 * 1000, &dialTask);
-    threads.add(tmp36Nm, 7, (unsigned long)25 * 1000, &tmp36ReadTask);
+    threads.add(tmp36Nm, 7, (unsigned long)100 * 1000, &tmp36ReadTask);
     threads.add(max7219Nm, 8, (unsigned long)40 * 1000, &displayTask);
     threads.add(blinkNm, 8, (unsigned long)500 * 1000, &ledBlinkTask);
 #ifdef DEBUG
