@@ -299,8 +299,7 @@ class Texter {
   }
 };
 
-class MX7219Task : public MX7219,
-                   public Task {
+class MX7219Task : public MX7219, public Task {
  public:
   explicit MX7219Task(const byte pwrPin, const byte dataPin, const byte clkPin, const byte csPin, const byte devices = 1)
       : MX7219(pwrPin, dataPin, clkPin, csPin, devices) {}

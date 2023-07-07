@@ -12,7 +12,7 @@ struct threadEntry {
   Task* task;     // pointer to the task
   byte priority;  // priority of the thread (1-255, lower number is highest priority)
 #ifdef DEBUG
-  const char* name;  // in debug mode store name of thread
+  const char* name;  // in debug mode store name of thread (must be stored in PROGMEM)
 #endif
 };
 
@@ -112,27 +112,25 @@ class ThreadManager {
 
 #ifdef DEBUG
   void printStats() const {
-    auto display = [](const char* name, const float pct) {
-      print(name);
-      print(" ");
-      println(pct);
-    };
-
     auto totalTime = runTime + waitTime;
     unsigned long totalTaskTime = 0;
 
     for (auto i = 0; i < this->numThreads; i++) {
       auto time = thread[i]->task->getRunTime();
       auto pct = float(time) / float(totalTime) * 100.0f;
-      display(thread[i]->name, pct);
       totalTaskTime += time;
+      print(FC(thread[i]->name));
+      print(F(" "));
+      println(pct);
     }
 
     auto pct = float(runTime - totalTaskTime) / float(totalTime) * 100.0f;
-    display("manager", pct);
+    print(F("manager "));
+    println(pct);
 
     pct = float(this->waitTime) / float(totalTime) * 100.0f;
-    display("idle", pct);
+    print(F("idle "));
+    println(pct);
   }
 #endif
 };

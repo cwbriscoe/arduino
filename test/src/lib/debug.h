@@ -38,6 +38,7 @@ void enableDebuggingSerialPort() {}
 #ifdef DEBUG
 #define print(x) Serial.print(x)
 #define println(x) Serial.println(x)
+#define FC(string_constant) (__FlashStringHelper *)string_constant
 #else
 #define print(x)
 #define println(x)
