@@ -63,7 +63,7 @@ class Manager {
     mode2BtnTask.addOnBtnDownCB(onMode2BtnDown);
     dialTask.addOnValChangedCB(onDialChanged);
 
-    // comment out Random for deterministic random numbers
+    // comment out initRandomSeed() for deterministic random numbers
     print(F("setup complete : seed = "));
     println(SysLib::initRandomSeed());
   }

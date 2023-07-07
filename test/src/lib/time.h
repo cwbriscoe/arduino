@@ -115,7 +115,7 @@ class Trigger : public Time {
 };
 
 // now() updates our global time object (to keep track of generation), updates
-// to the current time and returns a copy
+// to the current time and returns a reference
 Time _time;
 const Time& now() {
   _time.update();
