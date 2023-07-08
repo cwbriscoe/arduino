@@ -10,7 +10,7 @@
 namespace SysLib {
 unsigned long initRandomSeed() {
   const unsigned long prime = 181081;
-  unsigned int seedAddress = 0;
+  word seedAddress = 0;
 
   auto len = EEPROM.length();
   assert(len > 4);

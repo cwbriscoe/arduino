@@ -94,7 +94,7 @@ class Manager {
     self->displayTask.incMode();
   }
 
-  static void onDialChanged(const unsigned int val) {
+  static void onDialChanged(const word val) {
     print(F("dial value: "));
     println(val);
     self->displayTask.setIntensity(val);

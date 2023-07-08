@@ -12,12 +12,13 @@ class Sensor : public Control {
  private:
   byte pin = 0;
   byte res = 0;
+  byte currIdx = 0;
+  byte currFloatIdx = 0;
   word currVal = 0;
-  word prevVal = 0;
   word prevReading = 0;
   word valHist[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  byte currIdx = 0;
-  void (*onValChangedCB)(const unsigned int) = nullptr;
+  float valFloatHist[5] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+  void (*onValChangedCB)(const word) = nullptr;
 
  public:
   explicit Sensor(const byte pin, const byte res = ANALOG_MAX_BITS) {
@@ -29,14 +30,15 @@ class Sensor : public Control {
 
   void update() {
     // get new reading
-    word newVal = analogRead(pin) >> (ANALOG_MAX_BITS - res);
-    if (newVal != prevReading) {
-      prevReading = newVal;
+    word newReading = analogRead(pin) >> (ANALOG_MAX_BITS - res);
+    if (newReading != prevReading && newReading == valHist[currIdx]) {
+      prevReading = newReading;
       return;
     }
 
     // place it in the history index
-    valHist[currIdx] = newVal;
+    valHist[currIdx] = newReading;
+    word prevVal = valHist[currIdx];
     currIdx++;
     if (currIdx == 10) currIdx = 0;
 
@@ -49,19 +51,29 @@ class Sensor : public Control {
     }
     total -= hi;
     total -= lo;
-    currVal = (float(total) / 8.0f) + 0.5f; // round to the nearest integer value
+
+    valFloatHist[currFloatIdx] = float(total) / 8.0f;
+    currVal = (valFloatHist[currFloatIdx] + 0.5f);
+    currFloatIdx++;
+    if (currFloatIdx == 5) currFloatIdx = 0;
 
     // call the callback if the computed value is different than previously calculated
     if (currVal != prevVal) {
       if (onValChangedCB) onValChangedCB(currVal);
     }
-    prevVal = currVal;
-    //if (res == ANALOG_MAX_BITS) println(currVal);
   }
 
-  inline unsigned int value() const { return currVal; }
+  float floatValue() const {
+    float total = 0.0f;
+    for (auto i = 0; i < 5; i++) {
+      total += valFloatHist[i];
+    }
+    return total / 5.0f;
+  }
 
-  inline void addOnValChangedCB(void (*cb)(const unsigned int)) { onValChangedCB = cb; }
+  inline word value() const { return currVal; }
+
+  inline void addOnValChangedCB(void (*cb)(const word)) { onValChangedCB = cb; }
 };
 
 class SensorTask : public Sensor, public Task {

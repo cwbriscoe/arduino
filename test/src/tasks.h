@@ -25,12 +25,12 @@ class LedBlinkTask : public SysLib::LedTask {
 /*****************************************************************************/
 class TMP36ReadTask : public SysLib::TMP36Task {
  public:
-  unsigned int prevVal = 9999;
+  float prevVal = 9999;
   TMP36ReadTask(const byte pin) : TMP36Task(pin) {}
 
   void run(const SysLib::Time& time) final {
     SensorTask::run(time);
-    float val = value();
+    float val = floatValue();
     if (val != prevVal) {
       float volts = float(val) * 5.0f / 1024.0f;
       float tempC = (volts - 0.5f) * 100;

@@ -9,7 +9,7 @@ namespace SysLib {
 class Time {
  private:
   unsigned long time = 0;  // time in microseconds
-  unsigned int gens = 0;   // how many times time has overflowed
+  word gens = 0;           // how many times time has overflowed
 
  public:
   Time() {
