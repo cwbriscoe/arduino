@@ -26,8 +26,8 @@ class Manager {
   const byte pwrBtnPin = 8;
   const byte mode1BtnPin = 9;
   const byte mode2BtnPin = 10;
-  const byte dialPin = A3;
-  const byte tmp36Pin = A2;
+  const byte dialPin = A2;
+  const byte tmp36Pin = A3;
 
  private:
   SysLib::ThreadManager threads;  // pointer to our thread manager

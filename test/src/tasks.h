@@ -29,7 +29,7 @@ class TMP36ReadTask : public SysLib::TMP36Task {
   TMP36ReadTask(const byte pin) : TMP36Task(pin) {}
 
   void run(const SysLib::Time& time) final {
-    SensorTask::run(time);
+    TMP36Task::run(time);
     float val = floatValue();
     if (val != prevVal) {
       float volts = float(val) * 5.0f / 1024.0f;

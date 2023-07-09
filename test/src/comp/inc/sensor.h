@@ -9,15 +9,14 @@
 
 namespace SysLib {
 class Sensor : public Control {
+  const byte numSamples = 10;
+
  private:
   byte pin = 0;
   byte res = 0;
-  byte currIdx = 0;
-  byte currFloatIdx = 0;
+  word total = 0;
   word currVal = 0;
-  word prevReading = 0;
-  word valHist[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  float valFloatHist[5] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+  word prevVal = 0;
   void (*onValChangedCB)(const word) = nullptr;
 
  public:
@@ -26,52 +25,27 @@ class Sensor : public Control {
     this->pin = pin;
     this->res = res;
     pinMode(this->pin, INPUT);
+    for (byte i = 0; i < numSamples; i++) {
+      total += analogRead(this->pin);
+    }
   }
 
   void update() {
     // get new reading
-    word newReading = analogRead(pin) >> (ANALOG_MAX_BITS - res);
-    if (newReading != prevReading && newReading == valHist[currIdx]) {
-      prevReading = newReading;
-      return;
-    }
-
-    // place it in the history index
-    valHist[currIdx] = newReading;
-    word prevVal = valHist[currIdx];
-    currIdx++;
-    if (currIdx == 10) currIdx = 0;
-
-    // find the average value over history, tossing out the highest and lowest value
-    word hi = 0, lo = 1 << ANALOG_MAX_BITS, total = 0;
-    for (byte i = 0; i < 10; i++) {
-      if (valHist[i] > hi) hi = valHist[i];
-      if (valHist[i] < lo) lo = valHist[i];
-      total += valHist[i];
-    }
-    total -= hi;
-    total -= lo;
-
-    valFloatHist[currFloatIdx] = float(total) / 8.0f;
-    currVal = (valFloatHist[currFloatIdx] + 0.5f);
-    currFloatIdx++;
-    if (currFloatIdx == 5) currFloatIdx = 0;
+    int val = analogRead(pin) >> (ANALOG_MAX_BITS - res);
+    total -= (total / numSamples);
+    total += val;
+    currVal = total / numSamples;
 
     // call the callback if the computed value is different than previously calculated
     if (currVal != prevVal) {
+      prevVal = currVal;
       if (onValChangedCB) onValChangedCB(currVal);
     }
   }
 
-  float floatValue() const {
-    float total = 0.0f;
-    for (auto i = 0; i < 5; i++) {
-      total += valFloatHist[i];
-    }
-    return total / 5.0f;
-  }
-
   inline word value() const { return currVal; }
+  inline float const floatValue() { return float(total) / float(numSamples); }
 
   inline void addOnValChangedCB(void (*cb)(const word)) { onValChangedCB = cb; }
 };
