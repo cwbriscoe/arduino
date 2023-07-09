@@ -45,7 +45,7 @@ class Sensor : public Control {
   }
 
   inline word value() const { return currVal; }
-  inline float const floatValue() { return float(total) / float(numSamples); }
+  inline float const floatValue() { return (float(total) / float(numSamples)) + 0.5f; }
 
   inline void addOnValChangedCB(void (*cb)(const word)) { onValChangedCB = cb; }
 };

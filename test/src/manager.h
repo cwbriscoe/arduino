@@ -66,6 +66,7 @@ class Manager {
     mode1BtnTask.addOnBtnDownCB(onMode1BtnDown);
     mode2BtnTask.addOnBtnDownCB(onMode2BtnDown);
     dialTask.addOnValChangedCB(onDialChanged);
+    tmp36ReadTask.addOnFahrenheitChangedCB(onFahrenheitChanged);
 
     // comment out initRandomSeed() for deterministic random numbers
     print(F("setup complete : seed = "));
@@ -98,6 +99,10 @@ class Manager {
     print(F("dial value: "));
     println(val);
     self->displayTask.setIntensity(val);
+  }
+
+  static void onFahrenheitChanged(const float val) {
+    self->tmp36ReadTask.setFahrenheitTemp(val);
   }
 
   void run() {
