@@ -33,7 +33,11 @@ class Sensor : public Control {
   void update() {
     // get new reading
     int val = analogRead(pin) >> (ANALOG_MAX_BITS - res);
-    total -= (total / numSamples);
+    if (val == 0 && total > 0) {
+      total -= 1;
+    } else {
+      total -= (total / numSamples);
+    }
     total += val;
     currVal = total / numSamples;
 
@@ -45,7 +49,7 @@ class Sensor : public Control {
   }
 
   inline word value() const { return currVal; }
-  inline float const floatValue() { return (float(total) / float(numSamples)) + 0.5f; }
+  inline float const floatValue() { return (float(total) / float(numSamples)); }
 
   inline void addOnValChangedCB(void (*cb)(const word)) { onValChangedCB = cb; }
 };

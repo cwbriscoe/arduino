@@ -29,7 +29,7 @@ class TMP36ReadTask : public SysLib::TMP36Task {
   TMP36ReadTask(const byte pin) : TMP36Task(pin) {}
 
   void setFahrenheitTemp(float val) {
-    if (val != prevVal && abs(val - prevVal) > 0.2) {
+    if (val != prevVal && abs(val - prevVal) > 0.1f) {
       prevVal = val;
       print(F("current temp = "));
       print(val);
@@ -80,6 +80,7 @@ class DisplayTask : public SysLib::MX7219Task {
   SysLib::Trigger modeTrigger;
   byte mode = 0;
   byte mxi = 0;
+  bool cycle = true;
 
  public:
   DisplayTask() : MX7219Task(PWR_PIN, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES),
@@ -91,7 +92,7 @@ class DisplayTask : public SysLib::MX7219Task {
     if (!trigger.triggered(time)) return;
     if (modeTrigger.triggered(time)) {
       modeTrigger.reset(modeInterval);
-      incMode();
+      if (cycle) incMode();
     }
     if (this->isDisabled()) goto RESET;
 
@@ -142,6 +143,7 @@ class DisplayTask : public SysLib::MX7219Task {
   }
 
   void incMode() {
+    cycle = false;
     mxi = 0;
     clear();
     mode++;
@@ -149,6 +151,7 @@ class DisplayTask : public SysLib::MX7219Task {
   }
 
   void decMode() {
+    cycle = false;
     mxi = 0;
     clear();
     mode--;
