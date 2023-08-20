@@ -18,6 +18,9 @@
 
   min = 200mV, max = 800mV
   min = 11, max = 40
+
+  min = 11 * 19.61mV = 215.71mV
+  max = 40 * 19.61mV = 784.4mV
 */
 
 namespace App {
