@@ -67,10 +67,6 @@ class Manager {
     mode2BtnTask.addOnBtnDownCB(onMode2BtnDown);
     dialTask.addOnValChangedCB(onDialChanged);
     tmp36ReadTask.addOnFahrenheitChangedCB(onFahrenheitChanged);
-
-    // comment out initRandomSeed() for deterministic random numbers
-    print(F("setup complete : seed = "));
-    println(SysLib::initRandomSeed());
   }
 
   static void onPwrBtnDown() {
