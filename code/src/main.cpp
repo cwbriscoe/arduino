@@ -1,6 +1,6 @@
 // Copyright 2023 Christopher Briscoe.  All rights reserved.
 
-#include "manager.h"
+#include "proj/test/manager.h"
 
 App::Manager manager;
 

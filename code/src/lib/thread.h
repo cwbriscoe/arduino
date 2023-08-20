@@ -3,7 +3,6 @@
 #ifndef THREAD_H
 #define THREAD_H
 
-#include "env.h"
 #include "task.h"
 
 namespace SysLib {
