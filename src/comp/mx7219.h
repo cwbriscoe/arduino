@@ -262,8 +262,8 @@ class MX7219 : public Control {
     }
   }
 
-  void setDigitXY(const byte x, const byte y, const byte digit, const byte offset = 0) const {
-  }
+  // void setDigitXY(const byte x, const byte y, const byte digit, const byte offset = 0) const {
+  // }
 
   void setChar(const byte dev, const char chr) const {
     setDigit(dev, getChar(chr));
@@ -294,6 +294,7 @@ class Texter {
     while (*p != '\0') {
       auto chr = display->getChar(*p);
       println(chr);
+      (void)chr; // prevent compiler warning
       p++;
     }
   }
