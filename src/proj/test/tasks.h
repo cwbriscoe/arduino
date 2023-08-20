@@ -4,7 +4,6 @@
 #define TASKS_H
 
 #include "comp/inc/comp.h"
-#include "lib/debug.h"
 #include "lib/task.h"
 
 namespace App {
