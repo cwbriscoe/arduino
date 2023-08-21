@@ -3,7 +3,6 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
-#include "lib/random.h"
 #include "lib/thread.h"
 #include "tasks.h"
 
