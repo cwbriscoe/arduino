@@ -1,6 +1,6 @@
 // Copyright 2023 Christopher Briscoe.  All rights reserved.
 
-#include "proj/paul/manager.h"
+#include "proj/demo/manager.h"
 
 App::Manager manager;
 
