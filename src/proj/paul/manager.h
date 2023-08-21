@@ -20,6 +20,9 @@
 
   min = 11 * 19.61mV = 215.71mV
   max = 40 * 19.61mV = 784.4mV
+
+  A 10K OHM resister and a 10-100uF capacitor low-pass filter should drop voltage a bit
+  so min and max may need to be raised slightly to stay close to the 200-800mV range
 */
 
 namespace App {
