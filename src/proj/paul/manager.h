@@ -24,7 +24,13 @@
 */
 
 namespace App {
+const int minDutyCycle = 11;
+const int maxDutyCycle = 40;
+const unsigned long periodLength = 500000;  // 500 milliseconds
+
 const char blinkNm[] PROGMEM = "blink";
+const char pwmNm1[] PROGMEM = "pwm1";
+const char pwmNm2[] PROGMEM = "pwm2";
 #ifdef DEBUG
 const char counterNm[] PROGMEM = "counter";
 #endif
@@ -33,26 +39,29 @@ class Manager;
 static Manager* self;  // pointer to Manager instance to be used in static fuction callbacks
 
 class Manager {
+  const byte pwmPin1 = 5;
+  const byte pwmPin2 = 6;
+
  private:
   SysLib::ThreadManager threads;  // pointer to our thread manager
 
   // task declarations
-  LedBlinkTask ledBlinkTask;
-  // TaskCount taskCount;
+  PWMTask pwmTask1;
+  PWMTask pwmTask2;
 
  public:
-  Manager() {
+  Manager() : pwmTask1(pwmPin1, minDutyCycle, maxDutyCycle), pwmTask2(pwmPin2, minDutyCycle, maxDutyCycle) {
     self = this;
   }
 
   void init() {
-    // add tasks to the thread manager
-    threads.add(blinkNm, 8, (unsigned long)500 * 1000, &ledBlinkTask);
-#ifdef DEBUG
-    // threads.add(counterNm, 9, (unsigned long)50 * 1000, &taskCount);
-#endif
+    // calculate the update interval required
+    int updatesPerPeriod = (maxDutyCycle - minDutyCycle + 1) * 2 - 1;
+    unsigned long updateInterval = (periodLength / updatesPerPeriod);
 
-    // hook up callbacks
+    // add tasks to the thread manager
+    threads.add(pwmNm1, 1, updateInterval, &pwmTask1);
+    threads.add(pwmNm2, 1, updateInterval, &pwmTask2);
   }
 
   void run() {
