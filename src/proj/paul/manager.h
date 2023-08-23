@@ -26,16 +26,13 @@
 */
 
 namespace App {
+// configurable constants
 const int minDutyCycle = 11;
 const int maxDutyCycle = 40;
 const unsigned long periodLength = 500000;  // 500 milliseconds
 
-const char blinkNm[] PROGMEM = "blink";
 const char pwmNm1[] PROGMEM = "pwm1";
 const char pwmNm2[] PROGMEM = "pwm2";
-#ifdef DEBUG
-const char counterNm[] PROGMEM = "counter";
-#endif
 
 class Manager;
 static Manager* self;  // pointer to Manager instance to be used in static fuction callbacks
