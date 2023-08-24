@@ -27,6 +27,7 @@
 
 namespace App {
 // configurable constants
+const bool randomOutput = true;
 const int minDutyCycle = 11;
 const int maxDutyCycle = 40;
 const unsigned long periodLength = 500000;  // 500 milliseconds
@@ -49,7 +50,8 @@ class Manager {
   PWMTask pwmTask2;
 
  public:
-  Manager() : pwmTask1(pwmPin1, minDutyCycle, maxDutyCycle), pwmTask2(pwmPin2, minDutyCycle, maxDutyCycle) {
+  Manager() : pwmTask1(pwmPin1, minDutyCycle, maxDutyCycle, randomOutput),
+              pwmTask2(pwmPin2, minDutyCycle, maxDutyCycle, randomOutput) {
     self = this;
   }
 
