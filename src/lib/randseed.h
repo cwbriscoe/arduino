@@ -14,7 +14,7 @@ unsigned long initRandomSeed() {
 
   auto len = EEPROM.length();
   assert(len > 4);
-  if (len > 4) seedAddress = len - 4;
+  seedAddress = len - 4;
 
   union {
     unsigned long seed;

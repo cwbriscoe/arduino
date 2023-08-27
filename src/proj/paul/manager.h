@@ -23,11 +23,13 @@
 
   A 10K OHM resister and a 10-100uF capacitor low-pass filter should drop voltage a bit
   so min and max may need to be raised slightly to stay close to the 200-800mV range
+
+  Maybe a DAC like MCP4725 will work better than a low-pass filter?
 */
 
 namespace App {
 // configurable constants
-const bool randomOutput = true;
+const bool randomOutput = false;
 const int minDutyCycle = 11;
 const int maxDutyCycle = 40;
 const unsigned long periodLength = 500000;  // 500 milliseconds
